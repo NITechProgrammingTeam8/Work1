@@ -488,6 +488,7 @@ public class Search {
 			System.out.println("[Number] = 6 : A star Algorithm");
 		} else {
 			int which = Integer.parseInt(args[0]);
+			long start = System.currentTimeMillis();
 			switch (which) {
 			case 1:
 				// 幅優先探索
@@ -522,6 +523,8 @@ public class Search {
 			default:
 				System.out.println("Please input numbers 1 to 6");
 			}
+			long end = System.currentTimeMillis();
+			System.out.println("探索時間: " + (end - start) + "ms");
 		}
 	}
 }
