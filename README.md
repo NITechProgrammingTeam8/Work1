@@ -35,3 +35,29 @@ masterブランチに直接変更を加えることは、他の開発者との�
    - ローカルブランチを削除する git branch --delete [ブランチ名] を実行
    - GitHub上からリモートブランチを削除する
 ## 5.リモートへの反映が完了
+
+# 練習
+自分のレポートを追加してGitに反映してみる
+## 0.準備
+   - 現在Gitに反映させていない内容がある場合は、 git push origin を実行する
+   - git checkout master を実行
+   - git pull origin master を実行
+   - git branch --delete [自作したブランチ] を実行
+## 1.ブランチ作成
+   - git branch feature/[自分の名前]report を実行
+   - git checkout feature/[自分の名前]report を実行
+   - git push -u origin feature/[自分の名前]report を実行
+## 2.レポート作成
+   - Work1/reportに移動 cd Work1/report を実行
+   - touch [学籍番号].tex を実行
+   - [学籍番号].tex を編集
+## 3.Gitに反映
+   - git add --all を実行
+   - git commit -a -m "Add report" を実行
+   - git push origin を実行
+   - 増田に連絡
+   - 増田がmerge
+## 4.merge後
+   - git checkout master を実行
+   - git pull origin master を実行
+   - git branch --delete feature/[自分の名前]report を実行
