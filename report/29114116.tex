@@ -67,97 +67,121 @@
 \item[課題1-3] Search.javaの探索過程や最終的に得られた順路をユーザに視覚的に示すGUIを作成せよ. 
 \end{description}
 
-
-\section{課題1-1}
-\begin{screen}
-  Search.javaの状態空間におけるパラメータ（コストや評価値）を様々に変化させて実行し，各探索手法の違いを説明せよ. \\
-  具体的には，変化させたパラメータと探索結果（最短パス探索の成否，解を返すまでのステップ数，etc.）の関係を，探索手法毎に表やグラフ等にまとめよ．それらの結果を参照して考察を行い，各探索手法の違いを説明せよ.
-\end{screen}
-
-私の担当箇所は、後述するcalcFiboメソッドの実装である。
-\subsection{手法}
-課題に加えて、以下の3点を独自仕様として組み込んだ。
-
-\begin{enumerate}
-\item 与えられた数がフィボナッチ数かどうかを判定する。
-\item N番目のフィボナッチ数だけではなく，N番目までのフィボナッチ数列を返す。
-\item フィボナッチ数の一般項を用いてN番目のフィボナッチ数を求める。
-\end{enumerate}
-
-1.に関して、ユーザーから数字が与えられた時、それがフィボナッチ数である時に true を返し、フィボナッチ数ではない時には false を返す仕様とした。私はこのcalcFiboの実装を担当した。
-
-2.に関しては、整数Nが与えられた時、0番目からN番目までのフィボナッチ数列を配列として返す仕様とした。
-
-3.に関しては、・・・
-\subsection{実装}
-
-まず、プログラムに含まれるクラスは以下の1つ。
-\begin{itemize}
-\item Fibonacciクラス: メソッドcalcFibo, isFibo, calcFiboSeq, calcFiboGeneral を実装したクラス．Fibonacci.java に含まれる。
-\end{itemize}
-
-n番目のフィボナッチ数を計算するcalcFiboメソッドの実装をソースコード\ref{src:calcFibo}に示す。
-
-\begin{lstlisting}[caption=calcFiboメソッド,label=src:calcFibo]
-    // n番目のフィボナッチ数を計算して返す
-    int calcFibo(int n) {
-	if (n <= 1) {
-	    return 1;
-	}
-	return calcFibo(n - 1) + calcFibo(n - 2);
-    }
-\end{lstlisting}
-
-isFiboメソッドおよびcalcFiboSeqの実装については、グループレポートを参考にされたい。
-
-calcFiboメソッドに渡す引数nをプログラム実行時に指定できるようにするため、mainメソッドおよびFibonacciクラスのコンストラクタを以下のように実装した。
-\begin{lstlisting}[caption=mainメソッドとコンストラクタ,label=src:main]
-    public static void main(String[] args) {
-	new Fibonacci(Integer.parseInt(args[0]));
-    }
-
-    public Fibonacci(int n) {
-	System.out.println(calcFibo(n));
-    }
-\end{lstlisting}
-
-\subsection{実行例}
-Fibonacciクラスに引数5を指定した実行結果を以下に示す。
-
-\begin{lstlisting}
-clf1XXXX@cse:~/eclipse-workspace/Fibo > java Fibonacci 5
-8
-\end{lstlisting}
-
-今回は0, 1番目のフィボナッチ数を1としたため、calcFibo() の引数に5を与えた時は8となるのが正しい動作である。これは、・・・
-\subsection{考察}
-今回、フィボナッチ数をもとめるためのクラス Fibonacci を実装し、インスタンスメソッドとして機能を実装したが、これは静的クラスまたはシングルトンとして実装した方が適していたように考えられる。なぜなら・・・
-
-また、calcFiboメソッドを再帰関数として実装するのではなく、イテレータを用いて実装した場合を考える。イテレータで実装した場合は、実行速度が・・・
-
-
 \section{課題1-2}
 \begin{screen}
   グループでの進捗管理や成果物共有などについて，工夫した点や使ったツールについて考察せよ.
 \end{screen}
 
-課題0-2は実装を伴わない課題であるため、考察のみ記す。
+課題1-2は実装を伴わない課題であるため、考察のみ記す。
+
+\subsection{工夫した点}
+今回のチーム開発を行うに当たって,チーム8では主にGitHubを活用することによって,進捗管理と成果物共有を行った.
+まず,はじめに本講義用のOrganizationを作成した.Organization名はNITechProgrammingTeam8とした. \\
+Organizationにチームメンバー全員を招待し,第一回課題用のリポジトリWork1を作成した. \\
+（OrganizationのURL：https://github.com/NITechProgrammingTeam8）\\
+（RepositoryのURL：https://github.com/NITechProgrammingTeam8/Work1）
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/organization_image.png}
+  \caption{作成したOrganization}
+\end{figure}
+
+\newpage
+
+次に,主に利用した機能を以下に列挙する. \\
+\begin{description}
+  \item[Project機能] Work1用のプロジェクトを作成し,進捗管理を行うためのカンバンとする.
+  \item[Issues機能] 課題をいくつかのタスクに分解することにより,それぞれに担当者を割り当てる.
+  \item[MileStones機能] 個々のIssuesを完了するまでの期間を定める.
+  \item[PullRequest機能] 各Issuesと結びつけることによって,タスクと実際の作業を結びつける.
+\end{description}
+
+\subsection{Project機能}
+今回はWork1というリポジトリに対応したProjectを作成した.
+このProjectはカンバンと呼ばれ,プロジェクト全体の進行度を視覚的に把握するのに最適である. \\
+今回はタスクの進行度を以下の3種類に分類し,Columnに登録した. \\
+さらに,PRへの割当やMergeといったイベントを完了することによって,タスクの進行度が変化するように自動化を行った.
+\begin{description}
+  \item[To do] これから着手する予定のタスク.PR発行時にDevelopingに移動する.
+  \item[Developing] 開発中のタスク.Merge後にDoneに移動する.
+  \item[Done] 完了後のタスク.
+\end{description}
+発行したIssuesをタスクとすることでカンバンにおけるカードとした.
+以下に,Projectの画像を添付する.
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.25]{git_image/project_image.png}
+  \caption{Project機能を用いたタスク管理}
+\end{figure}
+
+\newpage
+
+\subsection{Issues機能}
+今回はタスクに対応したIssuesを発行した.
+それぞれのIssuesには最低1人の担当者を割り当て,MileStones機能により期日を設けた. \\
+次のようにタスクを分解し,Issuesを発行した.
+\begin{description}
+  \item[幅優先探索]
+  \item[深さ優先探索]
+  \item[最良優先探索]
+  \item[A*アルゴリズム]
+  \item[分枝限定法]
+  \item[山登り法]
+  \item[GitHub管理]
+  \item[GUI設計]     
+\end{description}
+また,個々のタスクはさらに粒度の細かい作業に分解され,それぞれに対してチェック欄を設け,メンバー全体が各々の進捗状況を細かく確認できる仕様にした.
+以下に,Issuesの画像を添付する.
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/issues_list_image.png}
+  \caption{Issues一覧}
+\end{figure}
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/issues_image.png}
+  \caption{Issues機能を用いたタスク割り当てとタスク分解}
+\end{figure}
+
+\newpage
+
+\subsection{MileStones機能}
+今回は個々のタスクを終了すべき期日をMileStones機能により設定した.
+設定したMileStonesは以下の通りである. \\
+\begin{description}
+  \item[探索アルゴリズムの実装] 10/10(木)
+  \item[GitHubの設定等] 10/10(木)
+  \item[GUIの実装] 10/13(日)
+  \item[レポートの作成] 10/13(日)
+\end{description}
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/milestones_list_image.png}
+  \caption{MileStones一覧}
+\end{figure}
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/milestones_image.png}
+  \caption{MileStones機能を用いたIssuesの期日管理}
+\end{figure}
+
+\newpage
+
+\subsection{PullRequest機能}
+今回はIssues単位でPRを発行し,紐づけるものとする. \\
+PRを行うことによって,変更をmasterブランチにMergeする前にレビューを行い,事前に問題点などを吟味することができる. \\
+また,masterとの差分によって変更点を視覚的に示すことが可能なため,メンバーの詳細な作業内容を把握しやすく,ソースコードの共有が容易となる. \\
+何か議論がある場合には,PR上で当該コードを指定してコメントを残すことができるため,具体性が増すメリットがある. \\
+以上のようにPR機能を用いることによって,ソースコードの品質を維持するだけでなく,円滑なコミュニティを形成することが可能となる.
 
 \subsection{考察}
-%文献\cite{kijima2012}によると、ひまわりの種の並び方にフィボナッチ数列が隠れているという。具体的には、・・・。その原理は、・・・であると考えられる。何故なら、図\ref{fig:himawari} \cite{notty} に示すように、・・・
 
-%\begin{figure}[!hbt]
-%  \centering
-%  \includegraphics[bb=0 0 543 245,width=0.6\linewidth]{himawari.png}
-%  \caption{ひまわりの種の並び方\cite{notty}}
-%  \label{fig:himawari}
-%\end{figure}
-
-
-\section{課題1-3}
-  Search.javaの探索過程や最終的に得られた順路をユーザに視覚的に示すGUIを作成せよ. 
-\section{感想}
-フィボナッチ数の一般項をもとめるのに夢中であやうく実装が間に合わなくなるところだった。実装に関しては、・・・
 
 
 % 参考文献
