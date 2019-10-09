@@ -61,3 +61,7 @@ masterブランチに直接変更を加えることは、他の開発者との�
    - git checkout master を実行
    - git pull origin master を実行
    - git branch --delete feature/[自分の名前]report を実行
+   
+# 問題・トラブルシューティング
+   - エラーを貼り付けてGoogle先生に問い合わせる
+   - 連絡いただければZoomでペアプロします
