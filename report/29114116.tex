@@ -28,11 +28,11 @@
 
 \title{知能プログラミング演習II 課題1}
 \author{グループ8\\
-  29114003 \\
-  29114060 \\
+  29114003 青山周平\\
+  29114060 後藤拓也\\
   29114116 増田大輝\\
-  29114142 \\
-  {\small (グループレポートの場合は、グループ名および全員の学生番号と氏名が必要)}
+  29114142 湯浅範子\\
+  29119016 小中祐希\\
 }
 \date{2019年10月7日}
 
@@ -47,13 +47,15 @@
   \hline
   学生番号&氏名&貢献度比率\\
   \hline\hline
-  2911XXXX&名工大輔&25\\
+  29114003&青山周平&NoData\\
   \hline
-  2911YYYY&工大花子&30\\
+  29114060&後藤拓也&NoData\\
   \hline
-  2911ZZZZ&情報工介&20\\
+  29114116&増田大輝&NoData\\
   \hline
-  2911UUUU&知能創太&25\\
+  29114142&湯浅範子&NoData\\
+  \hline
+  29119016&小中祐希&NoData\\
   \hline
 \end{tabular}
 
@@ -72,14 +74,12 @@
   グループでの進捗管理や成果物共有などについて，工夫した点や使ったツールについて考察せよ.
 \end{screen}
 
-課題1-2は実装を伴わない課題であるため、考察のみ記す。
-
 \subsection{工夫した点}
 今回のチーム開発を行うに当たって,チーム8では主にGitHubを活用することによって,進捗管理と成果物共有を行った.
 まず,はじめに本講義用のOrganizationを作成した.Organization名はNITechProgrammingTeam8とした. \\
 Organizationにチームメンバー全員を招待し,第一回課題用のリポジトリWork1を作成した. \\
-（OrganizationのURL：https://github.com/NITechProgrammingTeam8）\\
-（RepositoryのURL：https://github.com/NITechProgrammingTeam8/Work1）
+（OrganizationのURL：\url{https://github.com/NITechProgrammingTeam8}）\\
+（RepositoryのURL：\url{https://github.com/NITechProgrammingTeam8/Work1}）
 
 \begin{figure}[!hbt]
   \centering
@@ -97,7 +97,7 @@ Organizationにチームメンバー全員を招待し,第一回課題用のリ�
   \item[PullRequest機能] 各Issuesと結びつけることによって,タスクと実際の作業を結びつける.
 \end{description}
 
-\subsection{Project機能}
+\subsection{Project機能の運用と考察}
 今回はWork1というリポジトリに対応したProjectを作成した.
 このProjectはカンバンと呼ばれ,プロジェクト全体の進行度を視覚的に把握するのに最適である. \\
 今回はタスクの進行度を以下の3種類に分類し,Columnに登録した. \\
@@ -118,7 +118,8 @@ Organizationにチームメンバー全員を招待し,第一回課題用のリ�
 
 \newpage
 
-\subsection{Issues機能}
+
+\subsection{Issues機能の運用と考察}
 今回はタスクに対応したIssuesを発行した.
 それぞれのIssuesには最低1人の担当者を割り当て,MileStones機能により期日を設けた. \\
 次のようにタスクを分解し,Issuesを発行した.
@@ -149,7 +150,8 @@ Organizationにチームメンバー全員を招待し,第一回課題用のリ�
 
 \newpage
 
-\subsection{MileStones機能}
+
+\subsection{MileStones機能の運用と考察}
 今回は個々のタスクを終了すべき期日をMileStones機能により設定した.
 設定したMileStonesは以下の通りである. \\
 \begin{description}
@@ -173,23 +175,61 @@ Organizationにチームメンバー全員を招待し,第一回課題用のリ�
 
 \newpage
 
-\subsection{PullRequest機能}
+
+\subsection{PullRequest機能の運用と考察}
 今回はIssues単位でPRを発行し,紐づけるものとする. \\
 PRを行うことによって,変更をmasterブランチにMergeする前にレビューを行い,事前に問題点などを吟味することができる. \\
 また,masterとの差分によって変更点を視覚的に示すことが可能なため,メンバーの詳細な作業内容を把握しやすく,ソースコードの共有が容易となる. \\
-何か議論がある場合には,PR上で当該コードを指定してコメントを残すことができるため,具体性が増すメリットがある. \\
+さらに,何か議論がある場合には,PR上で当該コードを指定してコメントを残すことができるため,具体性が増すメリットがある. \\
 以上のようにPR機能を用いることによって,ソースコードの品質を維持するだけでなく,円滑なコミュニティを形成することが可能となる.
 
-\subsection{考察}
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/pull_request_detail_image.png}
+  \caption{PRの差分詳細}
+\end{figure}
 
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/pull_request_comment_image.png}
+  \caption{PRのレビュー機能}
+\end{figure}
+
+\newpage
+
+
+\subsection{チームメンバーへのレクチャー}
+チーム開発においては必須と言えるGitHubだが,概念的な理解が必要かつ多機能であるため,学習コストも非常に大きいというデメリットも存在する.
+しかし,今後の課題を想定すると,早い段階でGitHubを導入することにより,メンバー全員にGit管理の習慣を定着させることが最善であると判断した.
+したがって,学習コストというデメリットを克服する必要があると考えられる.
+私は,そのために基本的なGitコマンドの解説や手順を概念的な理解と共に学習できるようにREADME.mdを作成した.
+以下に,実際に作成したものを示す.
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/read_me_1.png}
+  \caption{README.mdその1}
+\end{figure}
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/read_me_2.png}
+  \caption{README.mdその2}
+\end{figure}
+
+\newpage
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/read_me_3.png}
+  \caption{README.mdその3}
+\end{figure}
 
 
 % 参考文献
 \begin{thebibliography}{99}
-\bibitem{kijima2012} 来嶋大二: ひまわりの螺旋, 数学のかんどころシリーズ 8, 共立出版, 2012.
-\bibitem{notty} ひまわりに隠されたフィボナッチ数列と黄金比---ひまわりは黄金の花？, 数学の面白いこと・役に立つことをまとめたサイト, \url{https://analytics-notty.tech/fibonacci-and-goldenratio-in-sunflower/} （2019年10月4日アクセス）.
-
-\bibitem{hanako} 工大花子さんのレポート。また、・・・を教えてもらった 
+\bibitem{notty} 新入社員におくるGitHubでのプロジェクト管理の初歩 --著：hayato ki \\
+\url{https://qiita.com/gumimin/items/63dcb36d4730213bd63a} （2019年10月7日アクセス）.
 
 \end{thebibliography}
 
