@@ -45,6 +45,10 @@ public class Search {
 		node[8].addChild(node[9], 5);
 	}
 
+	public Node[] getNode() {
+		return node;
+	}
+
 	/***
 	 * 幅優先探索
 	 */
