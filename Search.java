@@ -1,15 +1,16 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Search {
 	Node[] node;
 	Node goal;
 	Node start;
 
-	Search() {
-		makeStateSpace();
+	Search(int whichNode) {
+		makeStateSpace(whichNode);
 	}
 
-	private void makeStateSpace() {
+	private void makeStateSpace(int whichNode) {
 		node = new Node[10];
 		// 状態空間の生成
 		node[0] = new Node("L.A.Airport", 0);
@@ -22,27 +23,155 @@ public class Search {
 		node[7] = new Node("Pasadena", 4);
 		node[8] = new Node("DisneyLand", 2);
 		node[9] = new Node("Las Vegas", 0);
+		switch (whichNode) {
+		case 1:
+			//幅優先探索
+			node[0].addChild(node[1], 1);
+			node[0].addChild(node[2], 3);
+			node[1].addChild(node[2], 1);
+			node[1].addChild(node[6], 6);
+			node[2].addChild(node[3], 6);
+			node[2].addChild(node[6], 6);
+			node[2].addChild(node[7], 3);
+			node[3].addChild(node[4], 5);
+			node[3].addChild(node[7], 2);
+			node[3].addChild(node[8], 4);
+			node[4].addChild(node[8], 2);
+			node[4].addChild(node[9], 1);
+			node[5].addChild(node[1], 1);
+			node[6].addChild(node[5], 7);
+			node[6].addChild(node[7], 2);
+			node[7].addChild(node[8], 1);
+			node[7].addChild(node[9], 7);
+			node[8].addChild(node[9], 5);
+			break;
+		case 2:
+			//深さ優先探索
+			node[0].addChild(node[1], 1);
+			node[0].addChild(node[2], 3);
+			node[1].addChild(node[2], 1);
+			node[1].addChild(node[3], 6);
+			node[2].addChild(node[3], 6);
+			node[2].addChild(node[4], 6);
+			node[3].addChild(node[5], 5);
+			node[3].addChild(node[6], 2);
+			node[4].addChild(node[6], 2);
+			node[5].addChild(node[7], 1);
+			node[5].addChild(node[8], 1);
+			node[6].addChild(node[7], 7);
+			node[6].addChild(node[8], 2);
+			node[7].addChild(node[9], 1);
+			node[8].addChild(node[9], 5);
+			break;
+		case 3:
+			//分枝限定法
+			node[0].addChild(node[1], 1);
+			node[0].addChild(node[2], 3);
+			node[1].addChild(node[2], 1);
+			node[1].addChild(node[6], 6);
+			node[2].addChild(node[3], 6);
+			node[2].addChild(node[6], 6);
+			node[2].addChild(node[7], 3);
+			node[3].addChild(node[4], 5);
+			node[3].addChild(node[7], 2);
+			node[3].addChild(node[8], 4);
+			node[4].addChild(node[8], 2);
+			node[4].addChild(node[9], 1);
+			node[5].addChild(node[1], 1);
+			node[6].addChild(node[5], 7);
+			node[6].addChild(node[7], 2);
+			node[7].addChild(node[8], 1);
+			node[7].addChild(node[9], 7);
+			node[8].addChild(node[9], 5);
+			break;
+		case 4:
+			//山登り法
+			node[0].addChild(node[1], 1);
+			node[0].addChild(node[2], 3);
+			node[1].addChild(node[2], 1);
+			node[1].addChild(node[6], 6);
+			node[2].addChild(node[3], 6);
+			node[2].addChild(node[6], 6);
+			node[2].addChild(node[7], 3);
+			node[3].addChild(node[4], 5);
+			node[3].addChild(node[7], 2);
+			node[3].addChild(node[8], 4);
+			node[4].addChild(node[8], 2);
+			node[4].addChild(node[9], 1);
+			node[5].addChild(node[1], 1);
+			node[6].addChild(node[5], 7);
+			node[6].addChild(node[7], 2);
+			node[7].addChild(node[8], 1);
+			node[7].addChild(node[9], 7);
+			node[8].addChild(node[9], 5);
+			break;
+		case 5:
+			//最良優先探索
+			node[7] = new Node("Pasadena", 2);
+
+			node[0].addChild(node[1], 1);
+			node[0].addChild(node[2], 3);
+			node[1].addChild(node[2], 1);
+			node[1].addChild(node[6], 6);
+			node[2].addChild(node[3], 6);
+			node[2].addChild(node[6], 6);
+			node[2].addChild(node[7], 3);
+			node[3].addChild(node[4], 5);
+			node[3].addChild(node[7], 2);
+			node[3].addChild(node[8], 4);
+			node[4].addChild(node[8], 2);
+			node[4].addChild(node[9], 1);
+			node[5].addChild(node[1], 1);
+			node[6].addChild(node[5], 7);
+			node[6].addChild(node[7], 2);
+			node[7].addChild(node[8], 1);
+			node[7].addChild(node[9], 7);
+			node[8].addChild(node[9], 5);
+			break;
+		case 6:
+			//A*アルゴリズム
+			node[0].addChild(node[1], 1);
+			node[0].addChild(node[2], 3);
+			node[1].addChild(node[2], 1);
+			node[1].addChild(node[6], 6);
+			node[2].addChild(node[3], 6);
+			node[2].addChild(node[6], 6);
+			node[2].addChild(node[7], 3);
+			node[3].addChild(node[4], 5);
+			node[3].addChild(node[7], 2);
+			node[3].addChild(node[8], 4);
+			node[4].addChild(node[8], 2);
+			node[4].addChild(node[9], 1);
+			node[5].addChild(node[1], 1);
+			node[6].addChild(node[5], 7);
+			node[6].addChild(node[7], 2);
+			node[7].addChild(node[8], 1);
+			node[7].addChild(node[9], 7);
+			node[8].addChild(node[9], 5);
+			break;
+		default:
+			//初期状態
+			node[0].addChild(node[1], 1);
+			node[0].addChild(node[2], 3);
+			node[1].addChild(node[2], 1);
+			node[1].addChild(node[6], 6);
+			node[2].addChild(node[3], 6);
+			node[2].addChild(node[6], 6);
+			node[2].addChild(node[7], 3);
+			node[3].addChild(node[4], 5);
+			node[3].addChild(node[7], 2);
+			node[3].addChild(node[8], 4);
+			node[4].addChild(node[8], 2);
+			node[4].addChild(node[9], 1);
+			node[5].addChild(node[1], 1);
+			node[6].addChild(node[5], 7);
+			node[6].addChild(node[7], 2);
+			node[7].addChild(node[8], 1);
+			node[7].addChild(node[9], 7);
+			node[8].addChild(node[9], 5);
+		}
 		start = node[0];
 		goal = node[9];
-
-		node[0].addChild(node[1], 1);
-		node[0].addChild(node[2], 3);
-		node[1].addChild(node[2], 1);
-		node[1].addChild(node[6], 6);
-		node[2].addChild(node[3], 6);
-		node[2].addChild(node[6], 6);
-		node[2].addChild(node[7], 3);
-		node[3].addChild(node[4], 5);
-		node[3].addChild(node[7], 2);
-		node[3].addChild(node[8], 4);
-		node[4].addChild(node[8], 2);
-		node[4].addChild(node[9], 1);
-		node[5].addChild(node[1], 1);
-		node[6].addChild(node[5], 7);
-		node[6].addChild(node[7], 2);
-		node[7].addChild(node[8], 1);
-		node[7].addChild(node[9], 7);
-		node[8].addChild(node[9], 5);
 	}
 
 	/***
@@ -52,7 +181,7 @@ public class Search {
 		ArrayList<Node> open = new ArrayList<Node>();
 		open.add(start);
 		ArrayList<Node> closed = new ArrayList<Node>();
-		boolean success = false;
+		boolean success = false; //ゴールが見つかった場合にtrue(ループを抜ける)
 		int step = 0;
 
 		for (;;) {
@@ -61,7 +190,7 @@ public class Search {
 			System.out.println("CLOSED:" + closed.toString());
 			// openは空か？
 			if (open.size() == 0) {
-				success = false;
+				success = false; //探索失敗(ゴールが見つからずに探索すべきノードが無くなる)
 				break;
 			} else {
 				// openの先頭を取り出し node とする．
@@ -83,9 +212,9 @@ public class Search {
 							// m から node へのポインタを付ける．
 							m.setPointer(node);
 							if (m == goal) {
-								open.add(0, m);
+								open.add(0, m); //mが目標ノードなら先頭(0番目)に挿入
 							} else {
-								open.add(m);
+								open.add(m); //mが目標ノードでないなら一番後ろに挿入
 							}
 						}
 					}
@@ -141,9 +270,9 @@ public class Search {
 							// m から node へのポインタを付ける
 							m.setPointer(node);
 							if (m == goal) {
-								open.add(0, m);
+								open.add(0, m); //これの必要性は？success/breakはダメ？
 							} else {
-								open.add(j, m);
+								open.add(j, m); //子ノードは全て今までのリストの前に順に加える
 							}
 							j++;
 						}
@@ -227,7 +356,7 @@ public class Search {
 		ArrayList<Node> open = new ArrayList<Node>();
 		open.add(start);
 		start.setGValue(0);
-		ArrayList<Node> closed = new ArrayList<Node>();
+		//ArrayList<Node> closed = new ArrayList<Node>();
 		boolean success = false;
 
 		// Start を node とする．
@@ -401,8 +530,8 @@ public class Search {
 		}
 	}
 
-	
-	
+
+
 	/***
 	 * 解の表示
 	 */
@@ -435,7 +564,7 @@ public class Search {
 		return newOpen;
 	}
 
-	
+
 	/***
 	 * ArrayList を Node の gValue の昇順（小さい順）に列べ換える．
 	 */
@@ -477,48 +606,56 @@ public class Search {
 	}
 
 	public static void main(String[] args) {
-		if (args.length != 1) {
+		if (args.length != 2) {
 			System.out.println("USAGE:");
-			System.out.println("java Search [Number]");
+			System.out.println("java Search [Number] [NodePattern]");
 			System.out.println("[Number] = 1 : Bredth First Search");
 			System.out.println("[Number] = 2 : Depth  First Search");
 			System.out.println("[Number] = 3 : Branch and Bound Search");
 			System.out.println("[Number] = 4 : Hill Climbing Search");
 			System.out.println("[Number] = 5 : Best First Search");
 			System.out.println("[Number] = 6 : A star Algorithm");
+			System.out.println("[NodePattern] = 1 : Bredth First Search is best");
+			System.out.println("[NodePattern] = 2 : Depth  First Search is best");
+			System.out.println("[NodePattern] = 3 : Branch and Bound Search is best");
+			System.out.println("[NodePattern] = 4 : Hill Climbing Search is best");
+			System.out.println("[NodePattern] = 5 : Best First Search is best");
+			System.out.println("[NodePattern] = 6 : A star Algorithm is best");
+			System.out.println("[NodePattern] = other : initial value");
 		} else {
 			int which = Integer.parseInt(args[0]);
+			int whichNode = Integer.parseInt(args[1]);
 			long start = System.currentTimeMillis();
 			switch (which) {
 			case 1:
 				// 幅優先探索
 				System.out.println("\nBreadth First Search");
-				(new Search()).breadthFirst();
+				(new Search(whichNode)).breadthFirst();
 				break;
 			case 2:
 				// 深さ優先探索
 				System.out.println("\nDepth First Search");
-				(new Search()).depthFirst();
+				(new Search(whichNode)).depthFirst();
 				break;
 			case 3:
 				// 分岐限定法
 				System.out.println("\nBranch and Bound Search");
-				(new Search()).branchAndBound();
+				(new Search(whichNode)).branchAndBound();
 				break;
 			case 4:
 				// 山登り法
 				System.out.println("\nHill Climbing Search");
-				(new Search()).hillClimbing();
+				(new Search(whichNode)).hillClimbing();
 				break;
 			case 5:
 				// 最良優先探索
 				System.out.println("\nBest First Search");
-				(new Search()).bestFirst();
+				(new Search(whichNode)).bestFirst();
 				break;
 			case 6:
 				// A*アルゴリズム
 				System.out.println("\nA star Algorithm");
-				(new Search()).aStar();
+				(new Search(whichNode)).aStar();
 				break;
 			default:
 				System.out.println("Please input numbers 1 to 6");
@@ -530,9 +667,9 @@ public class Search {
 }
 
 class Node {
-	String name;
-	ArrayList<Node> children;
-	HashMap<Node,Integer> childrenCosts;
+	String name; //名前
+	ArrayList<Node> children; //子ノード
+	HashMap<Node,Integer> childrenCosts; //各子ノードまでのコストを保存
 	Node pointer; // 解表示のためのポインタ
 	int gValue; // コスト
 	int hValue; // ヒューリスティック値
@@ -581,13 +718,14 @@ class Node {
 		this.fValue = theFValue;
 	}
 
-	
+
 	/***
 	 * theChild この節点の子節点 theCost その子節点までのコスト
 	 */
 	public void addChild(Node theChild, int theCost) {
 		children.add(theChild);
-		childrenCosts.put(theChild, new Integer(theCost));
+		//childrenCosts.put(theChild, new Integer(theCost));
+		childrenCosts.put(theChild, Integer.valueOf(theCost));
 	}
 
 	public ArrayList<Node> getChildren() {
@@ -609,4 +747,3 @@ class Node {
 		return result;
 	}
 }
-
