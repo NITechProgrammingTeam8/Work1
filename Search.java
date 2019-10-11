@@ -23,35 +23,36 @@ public class Search {
 		node[7] = new Node("Pasadena", 4);
 		node[8] = new Node("DisneyLand", 2);
 		node[9] = new Node("Las Vegas", 0);
+
+
 		switch (whichNode) {
 		case 1:
 			//幅優先探索
+			node[2] = new Node("Hoolywood", 8);
+
 			node[0].addChild(node[1], 1);
 			node[0].addChild(node[2], 3);
-			node[1].addChild(node[2], 1);
-			node[1].addChild(node[6], 6);
-			node[2].addChild(node[3], 6);
-			node[2].addChild(node[6], 6);
-			node[2].addChild(node[7], 3);
-			node[3].addChild(node[4], 5);
-			node[3].addChild(node[7], 2);
-			node[3].addChild(node[8], 4);
-			node[4].addChild(node[8], 2);
-			node[4].addChild(node[9], 1);
-			node[5].addChild(node[1], 1);
-			node[6].addChild(node[5], 7);
-			node[6].addChild(node[7], 2);
+			node[1].addChild(node[3], 1);
+			node[1].addChild(node[4], 6);
+			node[2].addChild(node[9], 9);
+			node[3].addChild(node[5], 5);
+			node[4].addChild(node[6], 4);
+			node[4].addChild(node[7], 2);
+			node[5].addChild(node[4], 1);
+			node[6].addChild(node[8], 7);
 			node[7].addChild(node[8], 1);
 			node[7].addChild(node[9], 7);
 			node[8].addChild(node[9], 5);
 			break;
 		case 2:
 			//深さ優先探索
+			node[1] = new Node("UCLA", 2);
+
 			node[0].addChild(node[1], 1);
 			node[0].addChild(node[2], 3);
 			node[1].addChild(node[2], 1);
 			node[1].addChild(node[3], 6);
-			node[2].addChild(node[3], 6);
+			node[2].addChild(node[3], 4);
 			node[2].addChild(node[4], 6);
 			node[3].addChild(node[5], 5);
 			node[3].addChild(node[6], 2);
