@@ -24,51 +24,52 @@ public class Search {
 		node[7] = new Node("Pasadena", 4);
 		node[8] = new Node("DisneyLand", 2);
 		node[9] = new Node("Las Vegas", 0);
+
 		switch (whichNode) {
 			case 1:
 				//幅優先探索
-				node[0].addChild(node[1], 1);
-				node[0].addChild(node[2], 3);
-				node[1].addChild(node[2], 1);
-				node[1].addChild(node[6], 6);
-				node[2].addChild(node[3], 6);
-				node[2].addChild(node[6], 6);
-				node[2].addChild(node[7], 3);
-				node[3].addChild(node[4], 5);
-				node[3].addChild(node[7], 2);
-				node[3].addChild(node[8], 4);
-				node[4].addChild(node[8], 2);
-				node[4].addChild(node[9], 1);
-				node[5].addChild(node[1], 1);
-				node[6].addChild(node[5], 7);
-				node[6].addChild(node[7], 2);
-				node[7].addChild(node[8], 1);
-				node[7].addChild(node[9], 7);
-				node[8].addChild(node[9], 5);
-				break;
+        //幅優先探索が最小ステップ数となるようノードの関係性・コスト・ヒューリスティック値の変更
+				node[2] = new Node("Hoolywood", 8);
+
+  			node[0].addChild(node[1], 1);
+	  		node[0].addChild(node[2], 3);
+	  		node[1].addChild(node[3], 1);
+	  		node[1].addChild(node[4], 6);
+		  	node[2].addChild(node[9], 9);
+			  node[3].addChild(node[5], 5);
+	  		node[4].addChild(node[6], 4);
+	   		node[4].addChild(node[7], 2);
+	  		node[5].addChild(node[4], 1);
+	  		node[6].addChild(node[8], 7);
+		  	node[7].addChild(node[8], 1);
+		  	node[7].addChild(node[9], 7);
+			  node[8].addChild(node[9], 5);
+		  	break;
 			case 2:
 				//深さ優先探索
-				node[0].addChild(node[1], 1);
-				node[0].addChild(node[2], 3);
-				node[1].addChild(node[2], 1);
-				node[1].addChild(node[3], 6);
-				node[2].addChild(node[3], 6);
-				node[2].addChild(node[4], 6);
-				node[3].addChild(node[5], 5);
-				node[3].addChild(node[6], 2);
-				node[4].addChild(node[6], 2);
-				node[5].addChild(node[7], 1);
-				node[5].addChild(node[8], 1);
-				node[6].addChild(node[7], 7);
-				node[6].addChild(node[8], 2);
-				node[7].addChild(node[9], 1);
-				node[8].addChild(node[9], 5);
-				break;
+        //深さ優先探索が最小ステップ数となるようノードの関係性・コスト・ヒューリスティック値の変更
+   			node[1] = new Node("UCLA", 2);
+  
+	  		node[0].addChild(node[1], 1);
+	  		node[0].addChild(node[2], 3);
+		  	node[1].addChild(node[2], 1);
+	  		node[1].addChild(node[3], 6);
+	  		node[2].addChild(node[3], 4);
+	  		node[2].addChild(node[4], 6);
+	  		node[3].addChild(node[5], 5);
+	  		node[3].addChild(node[6], 2);
+	  		node[4].addChild(node[6], 2);
+	  		node[5].addChild(node[7], 1);
+	  		node[5].addChild(node[8], 1);
+	  		node[6].addChild(node[7], 7);
+	  		node[6].addChild(node[8], 2);
+	  		node[7].addChild(node[9], 1);
+	  		node[8].addChild(node[9], 5);
+	  		break;
 			case 3:
 				//分枝限定法
 				//0以上10未満の乱数を生成し、コストとする
 				Random rand = new Random();
-
 
 				node[0].addChild(node[1], rand.nextInt(10));
 				node[0].addChild(node[2], rand.nextInt(10));
@@ -115,6 +116,7 @@ public class Search {
 				break;
 			case 5:
 				//最良優先探索
+        //node[7]のヒューリスティック値を４->２と変更
 				node[7] = new Node("Pasadena", 2);
 
 				node[0].addChild(node[1], 1);
@@ -138,6 +140,12 @@ public class Search {
 				break;
 			case 6:
 				//A*アルゴリズム
+        /*node[1]のヒューリスティック値を７->３に変更
+         *node[7]->node[8]のコストを１->７に変更
+         *node[7]->node[9]のコストを７->１に変更
+         */
+        node[1] = new Node("UCLA", 3);
+        
 				node[0].addChild(node[1], 1);
 				node[0].addChild(node[2], 3);
 				node[1].addChild(node[2], 1);
@@ -153,8 +161,8 @@ public class Search {
 				node[5].addChild(node[1], 1);
 				node[6].addChild(node[5], 7);
 				node[6].addChild(node[7], 2);
-				node[7].addChild(node[8], 1);
-				node[7].addChild(node[9], 7);
+				node[7].addChild(node[8], 7);
+				node[7].addChild(node[9], 1);
 				node[8].addChild(node[9], 5);
 				break;
 			default:
@@ -666,7 +674,7 @@ public class Search {
 					(new Search(whichNode)).aStar();
 					break;
 				default:
-					System.out.println("Please input numbers 1 to 6");
+					System.out.println("Please input numbers 1 to 6")
 			}
 			long end = System.currentTimeMillis();
 			System.out.println("探索時間: " + (end - start) + "ms");
@@ -755,4 +763,3 @@ class Node {
 		return result;
 	}
 }
-
