@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class Search {
 	Node[] node;
@@ -24,152 +25,166 @@ public class Search {
 		node[8] = new Node("DisneyLand", 2);
 		node[9] = new Node("Las Vegas", 0);
 
-
 		switch (whichNode) {
-		case 1:
-			//幅優先探索
-			node[2] = new Node("Hoolywood", 8);
+			case 1:
+				//幅優先探索
+        //幅優先探索が最小ステップ数となるようノードの関係性・コスト・ヒューリスティック値の変更
+				node[2] = new Node("Hoolywood", 8);
 
-			node[0].addChild(node[1], 1);
-			node[0].addChild(node[2], 3);
-			node[1].addChild(node[3], 1);
-			node[1].addChild(node[4], 6);
-			node[2].addChild(node[9], 9);
-			node[3].addChild(node[5], 5);
-			node[4].addChild(node[6], 4);
-			node[4].addChild(node[7], 2);
-			node[5].addChild(node[4], 1);
-			node[6].addChild(node[8], 7);
-			node[7].addChild(node[8], 1);
-			node[7].addChild(node[9], 7);
-			node[8].addChild(node[9], 5);
-			break;
-		case 2:
-			//深さ優先探索
-			node[1] = new Node("UCLA", 2);
+  			node[0].addChild(node[1], 1);
+	  		node[0].addChild(node[2], 3);
+	  		node[1].addChild(node[3], 1);
+	  		node[1].addChild(node[4], 6);
+		  	node[2].addChild(node[9], 9);
+			  node[3].addChild(node[5], 5);
+	  		node[4].addChild(node[6], 4);
+	   		node[4].addChild(node[7], 2);
+	  		node[5].addChild(node[4], 1);
+	  		node[6].addChild(node[8], 7);
+		  	node[7].addChild(node[8], 1);
+		  	node[7].addChild(node[9], 7);
+			  node[8].addChild(node[9], 5);
+		  	break;
+			case 2:
+				//深さ優先探索
+        //深さ優先探索が最小ステップ数となるようノードの関係性・コスト・ヒューリスティック値の変更
+   			node[1] = new Node("UCLA", 2);
+  
+	  		node[0].addChild(node[1], 1);
+	  		node[0].addChild(node[2], 3);
+		  	node[1].addChild(node[2], 1);
+	  		node[1].addChild(node[3], 6);
+	  		node[2].addChild(node[3], 4);
+	  		node[2].addChild(node[4], 6);
+	  		node[3].addChild(node[5], 5);
+	  		node[3].addChild(node[6], 2);
+	  		node[4].addChild(node[6], 2);
+	  		node[5].addChild(node[7], 1);
+	  		node[5].addChild(node[8], 1);
+	  		node[6].addChild(node[7], 7);
+	  		node[6].addChild(node[8], 2);
+	  		node[7].addChild(node[9], 1);
+	  		node[8].addChild(node[9], 5);
+	  		break;
+			case 3:
+				//分枝限定法
+				//0以上10未満の乱数を生成し、コストとする
+				Random rand = new Random();
 
-			node[0].addChild(node[1], 1);
-			node[0].addChild(node[2], 3);
-			node[1].addChild(node[2], 1);
-			node[1].addChild(node[3], 6);
-			node[2].addChild(node[3], 4);
-			node[2].addChild(node[4], 6);
-			node[3].addChild(node[5], 5);
-			node[3].addChild(node[6], 2);
-			node[4].addChild(node[6], 2);
-			node[5].addChild(node[7], 1);
-			node[5].addChild(node[8], 1);
-			node[6].addChild(node[7], 7);
-			node[6].addChild(node[8], 2);
-			node[7].addChild(node[9], 1);
-			node[8].addChild(node[9], 5);
-			break;
-		case 3:
-			//分枝限定法
-			node[0].addChild(node[1], 1);
-			node[0].addChild(node[2], 3);
-			node[1].addChild(node[2], 1);
-			node[1].addChild(node[6], 6);
-			node[2].addChild(node[3], 6);
-			node[2].addChild(node[6], 6);
-			node[2].addChild(node[7], 3);
-			node[3].addChild(node[4], 5);
-			node[3].addChild(node[7], 2);
-			node[3].addChild(node[8], 4);
-			node[4].addChild(node[8], 2);
-			node[4].addChild(node[9], 1);
-			node[5].addChild(node[1], 1);
-			node[6].addChild(node[5], 7);
-			node[6].addChild(node[7], 2);
-			node[7].addChild(node[8], 1);
-			node[7].addChild(node[9], 7);
-			node[8].addChild(node[9], 5);
-			break;
-		case 4:
-			//山登り法
-			node[0].addChild(node[1], 1);
-			node[0].addChild(node[2], 3);
-			node[1].addChild(node[2], 1);
-			node[1].addChild(node[6], 6);
-			node[2].addChild(node[3], 6);
-			node[2].addChild(node[6], 6);
-			node[2].addChild(node[7], 3);
-			node[3].addChild(node[4], 5);
-			node[3].addChild(node[7], 2);
-			node[3].addChild(node[8], 4);
-			node[4].addChild(node[8], 2);
-			node[4].addChild(node[9], 1);
-			node[5].addChild(node[1], 1);
-			node[6].addChild(node[5], 7);
-			node[6].addChild(node[7], 2);
-			node[7].addChild(node[8], 1);
-			node[7].addChild(node[9], 7);
-			node[8].addChild(node[9], 5);
-			break;
-		case 5:
-			//最良優先探索
-			node[7] = new Node("Pasadena", 2);
+				node[0].addChild(node[1], rand.nextInt(10));
+				node[0].addChild(node[2], rand.nextInt(10));
+				node[1].addChild(node[2], rand.nextInt(10));
+				node[1].addChild(node[6], rand.nextInt(10));
+				node[2].addChild(node[3], rand.nextInt(10));
+				node[2].addChild(node[6], rand.nextInt(10));
+				node[2].addChild(node[7], rand.nextInt(10));
+				node[3].addChild(node[4], rand.nextInt(10));
+				node[3].addChild(node[7], rand.nextInt(10));
+				node[3].addChild(node[8], rand.nextInt(10));
+				node[4].addChild(node[8], rand.nextInt(10));
+				node[4].addChild(node[9], rand.nextInt(10));
+				node[5].addChild(node[1], rand.nextInt(10));
+				node[6].addChild(node[5], rand.nextInt(10));
+				node[6].addChild(node[7], rand.nextInt(10));
+				node[7].addChild(node[8], rand.nextInt(10));
+				node[7].addChild(node[9], rand.nextInt(10));
+				node[8].addChild(node[9], rand.nextInt(10));
+				break;
+			case 4:
+				//山登り法
+				//node[5]のヒューリスティック値を２->５と変更
+				node[5] = new Node("SanDiego", 5);
 
-			node[0].addChild(node[1], 1);
-			node[0].addChild(node[2], 3);
-			node[1].addChild(node[2], 1);
-			node[1].addChild(node[6], 6);
-			node[2].addChild(node[3], 6);
-			node[2].addChild(node[6], 6);
-			node[2].addChild(node[7], 3);
-			node[3].addChild(node[4], 5);
-			node[3].addChild(node[7], 2);
-			node[3].addChild(node[8], 4);
-			node[4].addChild(node[8], 2);
-			node[4].addChild(node[9], 1);
-			node[5].addChild(node[1], 1);
-			node[6].addChild(node[5], 7);
-			node[6].addChild(node[7], 2);
-			node[7].addChild(node[8], 1);
-			node[7].addChild(node[9], 7);
-			node[8].addChild(node[9], 5);
-			break;
-		case 6:
-			//A*アルゴリズム
-			node[0].addChild(node[1], 1);
-			node[0].addChild(node[2], 3);
-			node[1].addChild(node[2], 1);
-			node[1].addChild(node[6], 6);
-			node[2].addChild(node[3], 6);
-			node[2].addChild(node[6], 6);
-			node[2].addChild(node[7], 3);
-			node[3].addChild(node[4], 5);
-			node[3].addChild(node[7], 2);
-			node[3].addChild(node[8], 4);
-			node[4].addChild(node[8], 2);
-			node[4].addChild(node[9], 1);
-			node[5].addChild(node[1], 1);
-			node[6].addChild(node[5], 7);
-			node[6].addChild(node[7], 2);
-			node[7].addChild(node[8], 1);
-			node[7].addChild(node[9], 7);
-			node[8].addChild(node[9], 5);
-			break;
-		default:
-			//初期状態
-			node[0].addChild(node[1], 1);
-			node[0].addChild(node[2], 3);
-			node[1].addChild(node[2], 1);
-			node[1].addChild(node[6], 6);
-			node[2].addChild(node[3], 6);
-			node[2].addChild(node[6], 6);
-			node[2].addChild(node[7], 3);
-			node[3].addChild(node[4], 5);
-			node[3].addChild(node[7], 2);
-			node[3].addChild(node[8], 4);
-			node[4].addChild(node[8], 2);
-			node[4].addChild(node[9], 1);
-			node[5].addChild(node[1], 1);
-			node[6].addChild(node[5], 7);
-			node[6].addChild(node[7], 2);
-			node[7].addChild(node[8], 1);
-			node[7].addChild(node[9], 7);
-			node[8].addChild(node[9], 5);
+				node[0].addChild(node[1], 1);
+				node[0].addChild(node[2], 3);
+				node[1].addChild(node[2], 1);
+				node[1].addChild(node[6], 6);
+				node[2].addChild(node[3], 6);
+				node[2].addChild(node[6], 6);
+				node[2].addChild(node[7], 3);
+				node[3].addChild(node[4], 5);
+				node[3].addChild(node[7], 2);
+				node[3].addChild(node[8], 4);
+				node[4].addChild(node[8], 2);
+				node[4].addChild(node[9], 1);
+				node[5].addChild(node[1], 1);
+				node[6].addChild(node[5], 7);
+				node[6].addChild(node[7], 2);
+				node[7].addChild(node[8], 1);
+				node[7].addChild(node[9], 7);
+				node[8].addChild(node[9], 5);
+				break;
+			case 5:
+				//最良優先探索
+        //node[7]のヒューリスティック値を４->２と変更
+				node[7] = new Node("Pasadena", 2);
+
+				node[0].addChild(node[1], 1);
+				node[0].addChild(node[2], 3);
+				node[1].addChild(node[2], 1);
+				node[1].addChild(node[6], 6);
+				node[2].addChild(node[3], 6);
+				node[2].addChild(node[6], 6);
+				node[2].addChild(node[7], 3);
+				node[3].addChild(node[4], 5);
+				node[3].addChild(node[7], 2);
+				node[3].addChild(node[8], 4);
+				node[4].addChild(node[8], 2);
+				node[4].addChild(node[9], 1);
+				node[5].addChild(node[1], 1);
+				node[6].addChild(node[5], 7);
+				node[6].addChild(node[7], 2);
+				node[7].addChild(node[8], 1);
+				node[7].addChild(node[9], 7);
+				node[8].addChild(node[9], 5);
+				break;
+			case 6:
+				//A*アルゴリズム
+        /*node[1]のヒューリスティック値を７->３に変更
+         *node[7]->node[8]のコストを１->７に変更
+         *node[7]->node[9]のコストを７->１に変更
+         */
+        node[1] = new Node("UCLA", 3);
+        
+				node[0].addChild(node[1], 1);
+				node[0].addChild(node[2], 3);
+				node[1].addChild(node[2], 1);
+				node[1].addChild(node[6], 6);
+				node[2].addChild(node[3], 6);
+				node[2].addChild(node[6], 6);
+				node[2].addChild(node[7], 3);
+				node[3].addChild(node[4], 5);
+				node[3].addChild(node[7], 2);
+				node[3].addChild(node[8], 4);
+				node[4].addChild(node[8], 2);
+				node[4].addChild(node[9], 1);
+				node[5].addChild(node[1], 1);
+				node[6].addChild(node[5], 7);
+				node[6].addChild(node[7], 2);
+				node[7].addChild(node[8], 7);
+				node[7].addChild(node[9], 1);
+				node[8].addChild(node[9], 5);
+				break;
+			default:
+				//初期状態
+				node[0].addChild(node[1], 1);
+				node[0].addChild(node[2], 3);
+				node[1].addChild(node[2], 1);
+				node[1].addChild(node[6], 6);
+				node[2].addChild(node[3], 6);
+				node[2].addChild(node[6], 6);
+				node[2].addChild(node[7], 3);
+				node[3].addChild(node[4], 5);
+				node[3].addChild(node[7], 2);
+				node[3].addChild(node[8], 4);
+				node[4].addChild(node[8], 2);
+				node[4].addChild(node[9], 1);
+				node[5].addChild(node[1], 1);
+				node[6].addChild(node[5], 7);
+				node[6].addChild(node[7], 2);
+				node[7].addChild(node[8], 1);
+				node[7].addChild(node[9], 7);
+				node[8].addChild(node[9], 5);
 		}
 		start = node[0];
 		goal = node[9];
@@ -628,38 +643,38 @@ public class Search {
 			int whichNode = Integer.parseInt(args[1]);
 			long start = System.currentTimeMillis();
 			switch (which) {
-			case 1:
-				// 幅優先探索
-				System.out.println("\nBreadth First Search");
-				(new Search(whichNode)).breadthFirst();
-				break;
-			case 2:
-				// 深さ優先探索
-				System.out.println("\nDepth First Search");
-				(new Search(whichNode)).depthFirst();
-				break;
-			case 3:
-				// 分岐限定法
-				System.out.println("\nBranch and Bound Search");
-				(new Search(whichNode)).branchAndBound();
-				break;
-			case 4:
-				// 山登り法
-				System.out.println("\nHill Climbing Search");
-				(new Search(whichNode)).hillClimbing();
-				break;
-			case 5:
-				// 最良優先探索
-				System.out.println("\nBest First Search");
-				(new Search(whichNode)).bestFirst();
-				break;
-			case 6:
-				// A*アルゴリズム
-				System.out.println("\nA star Algorithm");
-				(new Search(whichNode)).aStar();
-				break;
-			default:
-				System.out.println("Please input numbers 1 to 6");
+				case 1:
+					// 幅優先探索
+					System.out.println("\nBreadth First Search");
+					(new Search(whichNode)).breadthFirst();
+					break;
+				case 2:
+					// 深さ優先探索
+					System.out.println("\nDepth First Search");
+					(new Search(whichNode)).depthFirst();
+					break;
+				case 3:
+					// 分岐限定法
+					System.out.println("\nBranch and Bound Search");
+					(new Search(whichNode)).branchAndBound();
+					break;
+				case 4:
+					// 山登り法
+					System.out.println("\nHill Climbing Search");
+					(new Search(whichNode)).hillClimbing();
+					break;
+				case 5:
+					// 最良優先探索
+					System.out.println("\nBest First Search");
+					(new Search(whichNode)).bestFirst();
+					break;
+				case 6:
+					// A*アルゴリズム
+					System.out.println("\nA star Algorithm");
+					(new Search(whichNode)).aStar();
+					break;
+				default:
+					System.out.println("Please input numbers 1 to 6")
 			}
 			long end = System.currentTimeMillis();
 			System.out.println("探索時間: " + (end - start) + "ms");
