@@ -2,8 +2,12 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 
-class SearchGUI extends JFrame {
+public class SearchGUI extends JFrame {
+    private Map<NodePanel, ArrayList<NodePanel>> links = new HashMap<>();
+    private Point start;
+    private Point end;
     public static void main(String args[]) {
         SearchGUI frame = new SearchGUI("探索");
         frame.setVisible(true);
@@ -11,8 +15,8 @@ class SearchGUI extends JFrame {
 
     SearchGUI(String title) {
         setTitle(title);
-        int appWidth = 300;
-        int appHeight = 250;
+        int appWidth = 1000;
+        int appHeight = 700;
         setBounds(100, 100, appWidth, appHeight);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -22,91 +26,186 @@ class SearchGUI extends JFrame {
         mainPanel.setLayout(layout);
 
         Search search = new Search();
+        Map<Node, NodePanel> map = new HashMap<>();
         Node[] node = search.getNode();
-        JPanel[] panels = new JPanel[10];
-        BevelBorder border = new BevelBorder(BevelBorder.RAISED);
         for (int i = 0; i < 10; i++) {
-            panels[i] = new JPanel(new GridLayout(2, 1));
-            panels[i].setBackground(Color.ORANGE);
-            panels[i].setBorder(border);
-
-            JLabel label = new JLabel(node[i].getName());
-            SpinnerNumberModel model = new SpinnerNumberModel(node[i].getHValue(), 0, 9999, 1);
-            JSpinner spinner = new JSpinner(model);
-            spinner.setPreferredSize(new Dimension(50, 25));
-
-            panels[i].add(label);
-            panels[i].add(spinner);
+            map.put(node[i], new NodePanel(node[i]));
         }
+        mainPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
 
-        layout.putConstraint(SpringLayout.NORTH, panels[0], 50, SpringLayout.NORTH, mainPanel);
-        layout.putConstraint(SpringLayout.WEST, panels[0], 50, SpringLayout.WEST, mainPanel);
-        for (int i = 1; i < 10; i++) {
-            layout.putConstraint(SpringLayout.NORTH, panels[i], 50, SpringLayout.SOUTH, panels[i - 1]);
-            layout.putConstraint(SpringLayout.WEST, panels[i], 50, SpringLayout.EAST, panels[i - 1]);
+        layout.putConstraint(SpringLayout.NORTH, map.get(node[0]), 300, SpringLayout.NORTH, mainPanel);
+        layout.putConstraint(SpringLayout.WEST, map.get(node[0]), 100, SpringLayout.WEST, mainPanel);
+        layout.putConstraint(SpringLayout.SOUTH, map.get(node[1]), -25, SpringLayout.NORTH, map.get(node[0]));
+        layout.putConstraint(SpringLayout.WEST, map.get(node[1]), 50, SpringLayout.EAST, map.get(node[0]));
+        layout.putConstraint(SpringLayout.NORTH, map.get(node[2]), 0, SpringLayout.NORTH, map.get(node[1]));
+        layout.putConstraint(SpringLayout.WEST, map.get(node[2]), 50, SpringLayout.EAST, map.get(node[1]));
+        layout.putConstraint(SpringLayout.SOUTH, map.get(node[7]), 0, SpringLayout.NORTH, map.get(node[2]));
+        layout.putConstraint(SpringLayout.WEST, map.get(node[7]), 50, SpringLayout.EAST, map.get(node[2]));
+        layout.putConstraint(SpringLayout.SOUTH, map.get(node[9]), -25, SpringLayout.NORTH, map.get(node[7]));
+        layout.putConstraint(SpringLayout.WEST, map.get(node[9]), 50, SpringLayout.EAST, map.get(node[7]));
+        layout.putConstraint(SpringLayout.NORTH, map.get(node[4]), 0, SpringLayout.NORTH, map.get(node[7]));
+        layout.putConstraint(SpringLayout.WEST, map.get(node[4]), 50, SpringLayout.EAST, map.get(node[9]));
+        layout.putConstraint(SpringLayout.NORTH, map.get(node[5]), 100, SpringLayout.SOUTH, map.get(node[0]));
+        layout.putConstraint(SpringLayout.WEST, map.get(node[5]), 75, SpringLayout.WEST, map.get(node[0]));
+        layout.putConstraint(SpringLayout.SOUTH, map.get(node[6]), -50, SpringLayout.NORTH, map.get(node[5]));
+        layout.putConstraint(SpringLayout.WEST, map.get(node[6]), 50, SpringLayout.EAST, map.get(node[5]));
+        layout.putConstraint(SpringLayout.NORTH, map.get(node[3]), 25, SpringLayout.SOUTH, map.get(node[6]));
+        layout.putConstraint(SpringLayout.WEST, map.get(node[3]), 50, SpringLayout.EAST, map.get(node[6]));
+        layout.putConstraint(SpringLayout.NORTH, map.get(node[8]), 0, SpringLayout.NORTH, map.get(node[3]));
+        layout.putConstraint(SpringLayout.WEST, map.get(node[8]), 50, SpringLayout.EAST, map.get(node[3]));
+
+        for (int i = 0; i < 10; i++) {
+            mainPanel.add(map.get(node[i]));
         }
 
         Container contentPane = getContentPane();
-        for (int i = 0; i < 10; i++) {
-            mainPanel.add(panels[i]);
-        }
         contentPane.add(mainPanel);
-
+        
         pack();
-        System.out.println(mainPanel.getComponent(0));
+        for(Map.Entry<Node, NodePanel> entry : map.entrySet()) {
+            NodePanel panel = entry.getValue();
+            links.put(panel, new ArrayList<NodePanel>());
+            ArrayList<NodePanel> values = links.get(panel);
+            for(Node child : panel.getNode().getChildren()) {
+                NodePanel childPanel = map.get(child);
+                values.add(childPanel);
+            }
+        }
     }
 
-    // @Override
-    // public void paint(Graphics g) {
-    // super.paint(g);
-    // paintLine(g);
-    // }
+    
+	@Override
+	public void paint(Graphics g) {
+		super.paint(g);
+		paintArrows(g);
+	}
+    
+	void paintArrows(Graphics g) {
+        g.setColor(Color.BLUE);
+        for(Map.Entry<NodePanel, ArrayList<NodePanel>> entry : links.entrySet()) {
+            NodePanel key = entry.getKey();
+            Rectangle source = key.getBounds();
+            for(NodePanel child : entry.getValue()) {
+                Rectangle distance = child.getBounds();
+                setShortestDistance(source, distance);
+                // SpinnerNumberModel model = new SpinnerNumberModel(key.getNode().getCost(child.getNode()), 0, 9999, 1);
+                // JSpinner spinner = new JSpinner(model);
+                // spinner.setPreferredSize(new Dimension(50, 25));
+                g.drawLine(start.x, start.y, end.x, end.y);
+            }
+        }
 
-    // void paintLine(Graphics g) {
-    // int startX = 50;
-    // int startY = 100;
-    // int endX = startX + 200;
-    // int endY = startY + 0;
-    // g.drawLine(startX, startY, endX, endY);
-    // }
+    }
+    
+        void setShortestDistance(Rectangle source, Rectangle distance) {
+        Point[] fromMidPoints = getMidPoints(source);
+        Point[] toMidPoints = getMidPoints(distance);
+
+        double min = Double.MAX_VALUE;
+        for(int i = 0; i < 4; i++) {
+            Point from = fromMidPoints[i].getLocation();
+            for(int j = 0; j < 4; j++) {
+                Point to = toMidPoints[j].getLocation();
+                double value = (from.getX() - to.getX()) * (from.getX() - to.getX()) + (from.getY() - to.getY()) * (from.getY() - to.getY());
+                if(value < min) {
+                    min = value;
+                    start = from;
+                    end = to;
+                }
+            }
+        }
+    }
+
+    Point[] getMidPoints(Rectangle r) {
+        Point[] midPoints = new Point[4];
+        for(int i = 0; i < midPoints.length; i++){
+            midPoints[i] = new Point();
+        }
+            midPoints[0].setLocation(r.x + r.width / 2.0, r.y); // 上の中点
+            midPoints[1].setLocation(r.x + r.width, r.y + r.height / 2.0); // 右の中点
+            midPoints[2].setLocation(r.x + r.width / 2.0, r.y + r.height); // 下の中点
+            midPoints[3].setLocation(r.x, r.y + r.height / 2.0); // 左の中点
+        return midPoints;
+    }
 }
 
-// public class LineDrawer {
+    class NodePanel extends JPanel {
+        private Node node;
+        ArrayList<NodePanel> children;
+    
+        NodePanel(Node node) {
+            this.node = node;
+            setLayout(new GridLayout(2, 1));
+            setBackground(Color.ORANGE);
+            setBorder(new BevelBorder(BevelBorder.RAISED));
+    
+            JLabel label = new JLabel(node.getName());
+            SpinnerNumberModel model = new SpinnerNumberModel(node.getHValue(), 0, 9999, 1);
+            JSpinner spinner = new JSpinner(model);
+            spinner.setPreferredSize(new Dimension(50, 25));
+    
+            add(label);
+            add(spinner);
+        }
+        
+        public Node getNode() {
+            return node;
+        }
+    }
 
-// public static void draw( Graphics g, Rectangle fromRect, Rectangle toRect ) {
+// class Arrow extends JPanel {
+//     Point start;
+//     Point end;
+//     public Arrow (Map<JPanel, ArrayList<JPanel>> links) {
+//         for(Map.Entry<JPanel, ArrayList<JPanel>> entry : links.entrySet()) {
+//             System.out.println(entry.getKey().getBounds());
+//         }
+//     }
 
-// // 最短の距離を求める
-// int[] position = ShortestDistanceObtainer.getShortest( fromRect, toRect );
-// int fromX = position[ 0 ];
-// int fromY = position[ 1 ];
-// int toX = position[ 2 ];
-// int toY = position[ 3 ];
+//     public Arrow () {
+//     }
 
-// g.drawLine( fromX, fromY, toX, toY );
+//     @Override
+//     public void paintComponent(Graphics g){
+//         super.paintComponent(g);
+//         // paintLine(g);
+//         g.setColor(Color.RED);
+//         g.fillOval(50, 50, 100, 100);
+//     }
 
-// // 線分の傾きを求める
-// double[] fromDouble = new double[] {fromX, fromY};
-// double[] toDouble = new double[] {toX, toY};
+//     void paintLine(Graphics g) {
+//         g.setColor(Color.RED);
+//         g.drawLine(start.x, start.y, end.x, end.y);
+//     }
 
-// double angle = StepUtils.getAngle( fromDouble, toDouble );
-// double oneAngle = angle + 150.0;
-// double anotherAngle = angle - 150.0;
+//     void setShortestDistance(Rectangle source, Rectangle distance) {
+//         Point[] fromMidPoints = getMidPoints(source);
+//         Point[] toMidPoints = getMidPoints(distance);
 
-// System.out.printf( "%3.0f,%3.0f,%3.0f\n",
-// angle, oneAngle, anotherAngle );
+//         double min = Double.MAX_VALUE;
+//         for(int i = 0; i < 4; i++) {
+//             Point from = fromMidPoints[i].getLocation();
+//             for(int j = 0; j < 4; j++) {
+//                 Point to = toMidPoints[j].getLocation();
+//                 double value = (from.getX() - to.getX()) * (from.getX() - to.getX()) + (from.getY() - to.getY()) * (from.getY() - to.getY());
+//                 if(value < min) {
+//                     min = value;
+//                     start = from;
+//                     end = to;
+//                 }
+//             }
+//         }
+//     }
 
-// // 矢印の部分を表示する
-// double pitch = 15.0;
-// g.drawLine( ( int ) ( toX + pitch * Math.cos( StepUtils.degreeToRadian(
-// oneAngle ) ) ),
-// ( int ) ( toY + pitch * Math.sin( StepUtils.degreeToRadian( oneAngle ) ) ),
-// toX, toY );
-// g.drawLine( ( int ) ( toX + pitch * Math.cos( StepUtils.degreeToRadian(
-// anotherAngle ) ) ),
-// ( int ) ( toY + pitch * Math.sin( StepUtils.degreeToRadian( anotherAngle ) )
-// ),
-// toX, toY );
-
-// }
-
+//     Point[] getMidPoints(Rectangle r) {
+//         Point[] midPoints = new Point[4];
+//         for(int i = 0; i < midPoints.length; i++){
+//             midPoints[i] = new Point();
+//         }
+//             midPoints[0].setLocation(r.x + r.width / 2.0, r.y); // 上の中点
+//             midPoints[1].setLocation(r.x + r.width, r.y + r.height / 2.0); // 右の中点
+//             midPoints[2].setLocation(r.x + r.width / 2.0, r.y + r.height); // 下の中点
+//             midPoints[3].setLocation(r.x, r.y + r.height / 2.0); // 左の中点
+//         return midPoints;
+//     }
 // }
