@@ -35,7 +35,7 @@ public class Search {
 			case 1:
 				//幅優先探索
         //幅優先探索が最小ステップ数となるようノードの関係性・コスト・ヒューリスティック値の変更
-			node[2] = new Node("Hoolywood", 8);
+				node[2] = new Node("Hoolywood", 8);
 
   			node[0].addChild(node[1], 1);
 	  		node[0].addChild(node[2], 3);
@@ -55,7 +55,7 @@ public class Search {
 				//深さ優先探索
         //深さ優先探索が最小ステップ数となるようノードの関係性・コスト・ヒューリスティック値の変更
    			node[1] = new Node("UCLA", 2);
-
+  
 	  		node[0].addChild(node[1], 1);
 	  		node[0].addChild(node[2], 3);
 		  	node[1].addChild(node[2], 1);
@@ -703,7 +703,7 @@ public class Search {
 					(new Search(whichNode)).aStar();
 					break;
 				default:
-					System.out.println("Please input numbers 1 to 6");
+					System.out.println("Please input numbers 1 to 6")
 			}
 			long end = System.currentTimeMillis();
 			System.out.println("探索時間: " + (end - start) + "ms");
