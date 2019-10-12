@@ -1,5 +1,11 @@
+package 知能系演習Ⅱ;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 public class Search {
@@ -145,7 +151,7 @@ public class Search {
          *node[7]->node[9]のコストを７->１に変更
          */
         node[1] = new Node("UCLA", 3);
-        
+
 				node[0].addChild(node[1], 1);
 				node[0].addChild(node[2], 3);
 				node[1].addChild(node[2], 1);
@@ -480,6 +486,10 @@ public class Search {
 		boolean success = false;
 		int step = 0;
 
+		ArrayList<Node> parentList = new ArrayList<Node>();
+		ArrayList<Node> childrenList = new ArrayList<Node>();
+		ArrayList<Integer> dataList = new ArrayList<Integer>();
+
 		for (;;) {
 			System.out.println("STEP:" + (step++));
 			System.out.println("OPEN:" + open.toString());
@@ -491,6 +501,9 @@ public class Search {
 			} else {
 				// openの先頭を取り出し node とする．
 				Node node = open.get(0);
+				System.out.println("parentNode = " + node);
+				parentList.add(node);
+
 				open.remove(0);
 				// node は ゴールか？
 				if (node == goal) {
@@ -503,8 +516,21 @@ public class Search {
 					closed.add(node);
 					for (int i = 0; i < children.size(); i++) {
 						Node m = children.get(i);
+						System.out.println("childNode = " + m);
+						childrenList.add(m);
+
 						int gmn = node.getGValue() + node.getCost(m);
+						System.out.println("gmn = " + gmn);
+						dataList.add(gmn);
+
 						int fmn = gmn + m.getHValue();
+						System.out.println("hmn = " + m.getHValue());
+						dataList.add(m.getHValue());
+
+						System.out.println("fmn = " + fmn);
+						dataList.add(fmn);
+
+						dataList.add(-1);
 
 						// 各子節点mの評価値とポインタを設定する
 						if (!open.contains(m) && !closed.contains(m)) {
@@ -536,10 +562,13 @@ public class Search {
 							}
 						}
 					}
+					childrenList.add(null);
 				}
 			}
 			open = sortUpperByFValue(open);
 		}
+
+		exportCsv(parentList,childrenList,dataList);
 		if (success) {
 			System.out.println("*** Solution ***");
 			printSolution(goal);
@@ -680,6 +709,97 @@ public class Search {
 			System.out.println("探索時間: " + (end - start) + "ms");
 		}
 	}
+
+	//CSVファイル出力
+		 public void exportCsv(List<Node> parentList, List<Node> childList, List<Integer> dataList){
+
+			 int i = 0;
+			 int j = 0;
+		        try {
+		            // 出力ファイルの作成
+
+		            FileWriter f = new FileWriter("A:\\data.csv", false);	//ファイルの出力場所はご自由に...
+		            //FileWriter f = new FileWriter("C:\\Users\\Owner\\Desktop", false);
+		            PrintWriter p = new PrintWriter(new BufferedWriter(f));
+
+		            // ヘッダーを指定する
+		            p.print("ParentNode:n");
+		            p.print(",");
+//		            p.print("OpenList:L");
+//		            p.print(",");
+//		            p.print("ClosedList:C");
+//		            p.print(",");
+		            p.print("ChildrenNode:m");
+		            p.print(",");
+//		            p.print("Cost:g");
+//		            p.print(",");
+//		            p.print("Hyurisutics:h'");
+//		            p.print(",");
+//		            p.print("Value:f'");
+		            p.println();
+
+		            System.out.println("ParentList.size = " + parentList.size());
+		            System.out.println("ChildList.size = " + childList.size());
+		            System.out.println("DataList.size = " + dataList.size());
+
+		            // 内容をセットする
+
+		            //親ノードの表示ループ
+		            while(i < parentList.size()) {
+		            	p.print(parentList.get(i) + ",");
+
+		            	//子ノードの表示ループ
+		            	while(j < childList.size()) {
+		            		if(childList.get(j) != null) {
+		            			p.print(childList.get(j) + ",");
+		            			j++;
+		            		}
+		            		else {
+		            			p.println();
+		            			j++;
+		            			break;
+		            		}
+
+		            	}
+
+		            	i++;
+		            }
+/*
+		            while(j < parentList.size()) {
+		            	System.out.println("j = " + j);
+		            	p.print(parentList.get(j) + ",");
+
+		            	if(childList.get(j) != null) {
+		            		p.print(childList.get(j) + ",");
+
+		            		//(int)iを使って,dataListに順に入っているg,h,fの値を取る
+		            		while(true) {
+		            			System.out.println("i = " + i);
+		            			if(dataList.get(i) != -1) {		//g,h,f値
+		            				p.print(dataList.get(i) + ",");
+		            				i++;
+		            			}
+		            			else {
+		            				p.println();
+		            				i++;
+		            				break;
+		            			}
+		            		}
+		            	}
+		            	else {
+		            		p.println();
+		            		j++;
+		            	}
+		            }
+*/
+		            // ファイルに書き出し閉じる
+		            p.close();
+		            System.out.println("ファイル出力完了！");
+		        } catch (IOException ex) {
+		            ex.printStackTrace();
+		        }
+
+		    }
 }
 
 class Node {
