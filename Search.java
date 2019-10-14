@@ -1,4 +1,4 @@
-package 知能系演習Ⅱ;
+package 知能系演習Ⅱ;	//Eclipseで動かしてます.package名は各環境に合わせてください.
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class Search {
 			case 1:
 				//幅優先探索
         //幅優先探索が最小ステップ数となるようノードの関係性・コスト・ヒューリスティック値の変更
-				node[2] = new Node("Hoolywood", 8);
+			node[2] = new Node("Hoolywood", 8);
 
   			node[0].addChild(node[1], 1);
 	  		node[0].addChild(node[2], 3);
@@ -55,7 +55,7 @@ public class Search {
 				//深さ優先探索
         //深さ優先探索が最小ステップ数となるようノードの関係性・コスト・ヒューリスティック値の変更
    			node[1] = new Node("UCLA", 2);
-  
+
 	  		node[0].addChild(node[1], 1);
 	  		node[0].addChild(node[2], 3);
 		  	node[1].addChild(node[2], 1);
@@ -122,8 +122,12 @@ public class Search {
 				break;
 			case 5:
 				//最良優先探索
+		//バグバージョン
+		//UCLA[1]のヒューリスティック値をHollywood[2]より下げてみるww
+				//node[1] = new Node("UCLA", 1);
+				//node[6] = new Node("Downtown", 1);
         //node[7]のヒューリスティック値を４->２と変更
-				node[7] = new Node("Pasadena", 2);
+				//node[7] = new Node("Pasadena", 2);
 
 				node[0].addChild(node[1], 1);
 				node[0].addChild(node[2], 3);
@@ -205,6 +209,8 @@ public class Search {
 		ArrayList<Node> closed = new ArrayList<Node>();
 		boolean success = false; //ゴールが見つかった場合にtrue(ループを抜ける)
 		int step = 0;
+		ArrayList<Node> parentList = new ArrayList<Node>();		//csv出力用 親ノード格納リスト
+		ArrayList<Node> childrenList = new ArrayList<Node>();   //csv出力用 子ノード格納リスト
 
 		for (;;) {
 			System.out.println("STEP:" + (step++));
@@ -217,6 +223,7 @@ public class Search {
 			} else {
 				// openの先頭を取り出し node とする．
 				Node node = open.get(0);
+				parentList.add(node);		//親ノード格納
 				open.remove(0);
 				// node は ゴールか？
 				if (node == goal) {
@@ -230,6 +237,7 @@ public class Search {
 					// 子節点 m が open にも closed にも含まれていなければ，
 					for (int i = 0; i < children.size(); i++) {
 						Node m = children.get(i);
+						childrenList.add(m);			//子ノード格納
 						if (!open.contains(m) && !closed.contains(m)) {
 							// m から node へのポインタを付ける．
 							m.setPointer(node);
@@ -241,9 +249,11 @@ public class Search {
 						}
 					}
 				}
+				childrenList.add(null);		//STEPを区切るnullコマンドを格納
 			}
 		}
 		if (success) {
+			exportCsv(parentList, childrenList, "breadthFirst");   //csv出力メソッド呼び出し
 			System.out.println("*** Solution ***");
 			printSolution(goal);
 		}
@@ -258,6 +268,8 @@ public class Search {
 		ArrayList<Node> closed = new ArrayList<Node>();
 		boolean success = false;
 		int step = 0;
+		ArrayList<Node> parentList = new ArrayList<Node>();		//csv出力用 親ノード格納リスト
+		ArrayList<Node> childrenList = new ArrayList<Node>();   //csv出力用 子ノード格納リスト
 
 		for (;;) {
 			System.out.println("STEP:" + (step++));
@@ -270,6 +282,7 @@ public class Search {
 			} else {
 				// openの先頭を取り出し node とする．
 				Node node = open.get(0);
+				parentList.add(node);		//親ノード格納
 				open.remove(0);
 				// node は ゴールか？
 				if (node == goal) {
@@ -288,6 +301,7 @@ public class Search {
 					int j = 0;
 					for (int i = 0; i < children.size(); i++) {
 						Node m = children.get(i);
+						childrenList.add(m);			//子ノード格納
 						if (!open.contains(m) && !closed.contains(m)) {
 							// m から node へのポインタを付ける
 							m.setPointer(node);
@@ -300,9 +314,11 @@ public class Search {
 						}
 					}
 				}
+				childrenList.add(null);		//STEPを区切るnullコマンドを格納
 			}
 		}
 		if (success) {
+			exportCsv(parentList, childrenList, "depthFirst");   //csv出力メソッド呼び出し
 			System.out.println("*** Solution ***");
 			printSolution(goal);
 		}
@@ -318,6 +334,8 @@ public class Search {
 		ArrayList<Node> closed = new ArrayList<Node>();
 		boolean success = false;
 		int step = 0;
+		ArrayList<Node> parentList = new ArrayList<Node>();		//csv出力用 親ノード格納リスト
+		ArrayList<Node> childrenList = new ArrayList<Node>();   //csv出力用 子ノード格納リスト
 
 		for (;;) {
 			System.out.println("STEP:" + (step++));
@@ -330,6 +348,7 @@ public class Search {
 			} else {
 				// openの先頭を取り出し node とする．
 				Node node = open.get(0);
+				parentList.add(node);		//親ノード格納
 				open.remove(0);
 				// node は ゴールか？
 				if (node == goal) {
@@ -342,6 +361,7 @@ public class Search {
 					closed.add(node);
 					for (int i = 0; i < children.size(); i++) {
 						Node m = children.get(i);
+						childrenList.add(m);			//子ノード格納
 						// 子節点mがopenにもclosedにも含まれていなければ，
 						if (!open.contains(m) && !closed.contains(m)) {
 							// m から node へのポインタを付ける．
@@ -362,9 +382,11 @@ public class Search {
 						}
 					}
 				}
+				childrenList.add(null);		//STEPを区切るnullコマンドを格納
 			}
 			open = sortUpperByGValue(open);
 		}
+		exportCsv(parentList, childrenList, "branchAndBound");   //csv出力メソッド呼び出し
 		if (success) {
 			System.out.println("*** Solution ***");
 			printSolution(goal);
@@ -380,11 +402,14 @@ public class Search {
 		start.setGValue(0);
 		//ArrayList<Node> closed = new ArrayList<Node>();
 		boolean success = false;
+		ArrayList<Node> parentList = new ArrayList<Node>();		//csv出力用 親ノード格納リスト
+		ArrayList<Node> childrenList = new ArrayList<Node>();   //csv出力用 子ノード格納リスト
 
 		// Start を node とする．
 		Node node = start;
 		for (;;) {
 			// node は ゴールか？
+			parentList.add(node);		//親ノード格納
 			if (node == goal) {
 				success = true;
 				break;
@@ -404,6 +429,7 @@ public class Search {
 				Node min = children.get(0);
 				for (int i = 0; i < children.size(); i++) {
 					Node a = children.get(i);
+					childrenList.add(a);		//子ノード格納
 					if (a == goal) {
 						goalp = true;
 					} else if (min.getHValue() > a.getHValue()) {
@@ -416,7 +442,9 @@ public class Search {
 					node = min;
 				}
 			}
+			childrenList.add(null);		//STEPを区切るnullコマンドを格納
 		}
+		exportCsv(parentList, childrenList, "hillClimbing");   //csv出力メソッド呼び出し
 		if (success) {
 			System.out.println("*** Solution ***");
 			printSolution(goal);
@@ -433,6 +461,8 @@ public class Search {
 		ArrayList<Node> closed = new ArrayList<Node>();
 		boolean success = false;
 		int step = 0;
+		ArrayList<Node> parentList = new ArrayList<Node>();		//csv出力用 親ノード格納リスト
+		ArrayList<Node> childrenList = new ArrayList<Node>();   //csv出力用 子ノード格納リスト
 
 		for (;;) {
 			System.out.println("STEP:" + (step++));
@@ -445,6 +475,7 @@ public class Search {
 			} else {
 				// openの先頭を取り出し node とする．
 				Node node = open.get(0);
+				parentList.add(node);		//親ノード格納
 				open.remove(0);
 				// node は ゴールか？
 				if (node == goal) {
@@ -457,6 +488,9 @@ public class Search {
 					closed.add(node);
 					for (int i = 0; i < children.size(); i++) {
 						Node m = children.get(i);
+
+						childrenList.add(m);		//子ノード格納
+
 						// 子節点mがopenにもclosedにも含まれていなければ，
 						if (!open.contains(m) && !closed.contains(m)) {
 							// m から node へのポインタを付ける．
@@ -464,10 +498,12 @@ public class Search {
 							open.add(m);
 						}
 					}
+					childrenList.add(null);		//STEPを区切るnullコマンドを格納
 				}
 			}
 			open = sortUpperByHValue(open);
 		}
+		exportCsv(parentList,childrenList, "bestFirst");   //csv出力メソッド呼び出し
 		if (success) {
 			System.out.println("*** Solution ***");
 			printSolution(goal);
@@ -486,9 +522,9 @@ public class Search {
 		boolean success = false;
 		int step = 0;
 
-		ArrayList<Node> parentList = new ArrayList<Node>();
-		ArrayList<Node> childrenList = new ArrayList<Node>();
-		ArrayList<Integer> dataList = new ArrayList<Integer>();
+		ArrayList<Node> parentList = new ArrayList<Node>();		//csv出力用 親ノード格納リスト
+		ArrayList<Node> childrenList = new ArrayList<Node>();   //csv出力用 子ノード格納リスト
+		//ArrayList<Integer> dataList = new ArrayList<Integer>();
 
 		for (;;) {
 			System.out.println("STEP:" + (step++));
@@ -502,7 +538,7 @@ public class Search {
 				// openの先頭を取り出し node とする．
 				Node node = open.get(0);
 				System.out.println("parentNode = " + node);
-				parentList.add(node);
+				parentList.add(node);		//親ノード格納
 
 				open.remove(0);
 				// node は ゴールか？
@@ -517,20 +553,20 @@ public class Search {
 					for (int i = 0; i < children.size(); i++) {
 						Node m = children.get(i);
 						System.out.println("childNode = " + m);
-						childrenList.add(m);
+						childrenList.add(m);		//子ノード格納
 
 						int gmn = node.getGValue() + node.getCost(m);
 						System.out.println("gmn = " + gmn);
-						dataList.add(gmn);
+						//dataList.add(gmn);
 
 						int fmn = gmn + m.getHValue();
 						System.out.println("hmn = " + m.getHValue());
-						dataList.add(m.getHValue());
+						//dataList.add(m.getHValue());
 
 						System.out.println("fmn = " + fmn);
-						dataList.add(fmn);
+						//dataList.add(fmn);
 
-						dataList.add(-1);
+						//dataList.add(-1);
 
 						// 各子節点mの評価値とポインタを設定する
 						if (!open.contains(m) && !closed.contains(m)) {
@@ -562,13 +598,13 @@ public class Search {
 							}
 						}
 					}
-					childrenList.add(null);
+					childrenList.add(null);		//STEPを区切るnullコマンドを格納
 				}
 			}
 			open = sortUpperByFValue(open);
 		}
 
-		exportCsv(parentList,childrenList,dataList);
+		exportCsv(parentList,childrenList,"aStar");   //csv出力メソッド呼び出し
 		if (success) {
 			System.out.println("*** Solution ***");
 			printSolution(goal);
@@ -703,23 +739,30 @@ public class Search {
 					(new Search(whichNode)).aStar();
 					break;
 				default:
-					System.out.println("Please input numbers 1 to 6")
+					System.out.println("Please input numbers 1 to 6");
 			}
 			long end = System.currentTimeMillis();
 			System.out.println("探索時間: " + (end - start) + "ms");
 		}
 	}
 
-	//CSVファイル出力
-		 public void exportCsv(List<Node> parentList, List<Node> childList, List<Integer> dataList){
+	/***
+	 * CSV出力メソッド
+	 * 引数1:親ノード格納リスト
+	 * 引数2:子ノード格納リスト
+	 * 引数3:探索名格納リスト
+	 */
+		 public void exportCsv(List<Node> parentList, List<Node> childList, String fileName){
 
 			 int i = 0;
 			 int j = 0;
 		        try {
 		            // 出力ファイルの作成
 
-		            FileWriter f = new FileWriter("A:\\data.csv", false);	//ファイルの出力場所はご自由に...
-		            //FileWriter f = new FileWriter("C:\\Users\\Owner\\Desktop", false);
+		        	//String name = "aStar";
+
+		            //FileWriter f = new FileWriter("A:\\" + fileName + ".csv", false);	//ファイルの出力場所はご自由に...
+		            FileWriter f = new FileWriter("C:\\Users\\Owner\\Desktop\\" + fileName + ".csv", false);
 		            PrintWriter p = new PrintWriter(new BufferedWriter(f));
 
 		            // ヘッダーを指定する
@@ -740,7 +783,7 @@ public class Search {
 
 		            System.out.println("ParentList.size = " + parentList.size());
 		            System.out.println("ChildList.size = " + childList.size());
-		            System.out.println("DataList.size = " + dataList.size());
+		            //System.out.println("DataList.size = " + dataList.size());
 
 		            // 内容をセットする
 
