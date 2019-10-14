@@ -1,0 +1,6 @@
+ParentNode:n,ChildrenNode:m,
+L.A.Airport(h:0)(g:0),UCLA(h:7),Hoolywood(h:4),
+Hoolywood(h:4),Anaheim(h:6),Downtown(h:3),Pasadena(h:4),
+Downtown(h:3),SanDiego(h:5),Pasadena(h:4),
+Pasadena(h:4),DisneyLand(h:2),Las Vegas(h:0),
+Las Vegas(h:0),
