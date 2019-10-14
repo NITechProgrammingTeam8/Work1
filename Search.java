@@ -6,6 +6,7 @@ public class Search {
 	Node[] node;
 	Node goal;
 	Node start;
+	ArrayList<Node> route = new ArrayList<>();
 
 	Search(int whichNode) {
 		makeStateSpace(whichNode);
@@ -556,6 +557,7 @@ public class Search {
 	 * 解の表示
 	 */
 	public void printSolution(Node theNode) {
+		route.add(theNode);
 		if (theNode == start) {
 			System.out.println(theNode.toString());
 		} else {
@@ -678,11 +680,53 @@ public class Search {
 					(new Search(whichNode)).aStar();
 					break;
 				default:
-					System.out.println("Please input numbers 1 to 6")
+					System.out.println("Please input numbers 1 to 6");
 			}
 			long end = System.currentTimeMillis();
 			System.out.println("探索時間: " + (end - start) + "ms");
 		}
+	}
+
+	public ArrayList<Node> exec(int which) {
+		route = new ArrayList<>();
+
+		switch (which) {
+			case 1:
+				// 幅優先探索
+				System.out.println("\nBreadth First Search");
+				breadthFirst();
+				break;
+			case 2:
+				// 深さ優先探索
+				System.out.println("\nDepth First Search");
+				depthFirst();
+				break;
+			case 3:
+				// 分岐限定法
+				System.out.println("\nBranch and Bound Search");
+				branchAndBound();
+				break;
+			case 4:
+				// 山登り法
+				System.out.println("\nHill Climbing Search");
+				hillClimbing();
+				break;
+			case 5:
+				// 最良優先探索
+				System.out.println("\nBest First Search");
+				bestFirst();
+				break;
+			case 6:
+				// A*アルゴリズム
+				System.out.println("\nA star Algorithm");
+				aStar();
+				break;
+			default:
+				System.out.println("Please input numbers 1 to 6");
+				return null;
+		}
+
+		return route;
 	}
 }
 
@@ -729,6 +773,10 @@ class Node {
 		return hValue;
 	}
 
+	public void setHValue(int theHValue) {
+		this.hValue = theHValue;
+	}
+
 	public int getFValue() {
 		return fValue;
 	}
@@ -748,6 +796,14 @@ class Node {
 		childrenCosts.put(theChild, Integer.valueOf(theCost));
 	}
 
+	public void remakeChild(Node theChild, int theCost) {
+		if(children.contains(theChild)) {
+			childrenCosts.replace(theChild, Integer.valueOf(theCost));
+		} else {
+			System.out.println("have no such a child");
+		}
+	}
+
 	public ArrayList<Node> getChildren() {
 		return children;
 	}
@@ -765,5 +821,14 @@ class Node {
 			result = result + "(f:" + fValue + ")";
 		}
 		return result;
+	}
+
+	void reset() {
+		pointer = null;
+		gValue = 0;
+		hValue = 0;
+		fValue = 0;
+		hasGValue = false;
+		hasFValue = false;
 	}
 }
