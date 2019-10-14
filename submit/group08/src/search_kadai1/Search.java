@@ -1,4 +1,4 @@
-package 知能系演習Ⅱ;	//Eclipseで動かしてます.package名は各環境に合わせてください.
+package search_kadai1;	//Eclipseで動かしてます.package名は各環境に合わせてください.
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
