@@ -1,0 +1,1157 @@
+\documentclass[12pt]{jarticle}
+
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{url}
+\usepackage{listings,jlisting}
+\usepackage{ascmac}
+\usepackage{amsmath,amssymb}
+\usepackage{comment}
+
+%ここからソースコードの表示に関する設定
+\lstset{
+  basicstyle={\ttfamily},
+  identifierstyle={\small},
+  commentstyle={\smallitshape},
+  keywordstyle={\small\bfseries},
+  ndkeywordstyle={\small},
+  stringstyle={\small\ttfamily},
+  frame={tb},
+  breaklines=true,
+  columns=[l]{fullflexible},
+  numbers=left,
+  xrightmargin=0zw,
+  xleftmargin=3zw,
+  numberstyle={\scriptsize},
+  stepnumber=1,
+  numbersep=1zw,
+  lineskip=-0.5ex
+}
+%ここまでソースコードの表示に関する設定
+
+\title{知能プログラミング演習II 課題1}
+\author{グループ8\\
+	29114003 青山周平\\
+	29114060 後藤拓也\\
+	29114116 増田大輝\\
+	29114142 湯浅範子\\
+	29119016 小中祐希\\
+%{\small (グループレポートの場合は、グループ名および全員の学生番号と氏名が必要)}
+}
+\date{2019年10月15日}
+
+\begin{document}
+\maketitle
+
+\paragraph{提出物} rep1，group08.zip
+\begin{comment}
+\paragraph{グループ} グループ8
+\paragraph{メンバー}
+\begin{tabular}{|c|c|}
+  \hline
+  学生番号&氏名\\
+  \hline\hline
+  29114003&青山周平\\
+  \hline
+  29114060&後藤拓也\\
+  \hline
+  29114116&増田大輝\\
+  \hline
+  29114142&湯浅範子\\
+  \hline
+  29119016&小中祐希\\
+  \hline
+\end{tabular}
+\end{comment}
+
+
+\section{課題の説明}
+\begin{description}
+\item[必須課題1-1]Search.javaの状態空間におけるパラメータ（コストや評価値）を様々に変化させて実行し，各探索手法の違いを説明せよ. \\
+\hspace{4mm}具体的には，変化させたパラメータと探索結果（最短パス探索の成否，解を返すまでのステップ数，etc.）の関係を，探索手法毎に表やグラフ等にまとめよ．それらの結果を参照して考察を行い，各探索手法の違いを説明せよ. 
+\item[必須課題1-2] グループでの進捗管理や成果物共有などについて，工夫した点や使ったツールについて考察せよ.
+\item[発展課題1-3] Search.javaの探索過程や最終的に得られた順路をユーザに視覚的に示すGUIを作成せよ. 
+\end{description}
+
+
+\section{必須課題1-1}
+\begin{screen}
+Search.javaの状態空間におけるパラメータ（コストや評価値）を様々に変化させて実行し，各探索手法の違いを説明せよ. \\
+\hspace{4mm}具体的には，変化させたパラメータと探索結果（最短パス探索の成否，解を返すまでのステップ数，etc.）の関係を，探索手法毎に表やグラフ等にまとめよ．それらの結果を参照して考察を行い，各探索手法の違いを説明せよ. 
+\end{screen}
+
+
+\subsection{手法}
+グループで役割分担をし，各探索手法について調べた．\\
+
+$\rhd$ 幅優先探索は今いるノードの子ノードの探索が全て終わってから次のノードの子ノードを探索する手法である．またコストやヒューリスティック値のパラメータに依存せず，状態空間の変化に応じてのみ探索順が変化する．そのため今回は状態空間そのものの変更を行った．\par
+$\rhd$深さ優先探索は，今いるノードの子ノードを次々順に探索していく手法である．この探索手法も幅優先探索同様コストやヒューリスティック値のパラメータに依存せず，状態空間の変化に応じてのみ探索順が変化する．そのため今回は状態空間そのものの変更を行った．\par
+$\rhd$分岐限定法では最終的に得られる経路は最適解になる.従って,今回はノード間のコストをランダムに生成するようにして様々なパターンを試し,計算時間やステップ数を比較考察する.\par
+$\rhd$山登り法はヒューリスティック値だけを用いた探索法である.今回は,最初に与えられたヒューリスティック値では無限ループに陥ってしまうため,ヒューリスティック値の一部を変更して適切な経路をたどるようにした.\par
+$\rhd$最良推定法は各ノードにおけるヒューリスティック値をもとに探索を進めていく方法で,直前のノードから次のヒューリスティック値だけを見て,行き当たりばったりに探索を進める山登り法とは異なり,過去のデータ(これから訪れる可能性をもったノード)のヒューリスティック値をOpenListに保存するので,山登り法よりも最適な探索が可能である. \par
+$\rhd$A*アルゴリズムはそのノードまでのコストの合計とそのノードのヒューリステック値の和をとる. 最良優先探索の弱点でさえも初期ノードからのコストを考慮することで, 正解にはたどり着ける.\\
+
+ここから，与えられたSearch.javaの探索プログラムを以下のように改良した．
+\begin{enumerate}
+\item 状態空間のパラメータや状態空間そのものを変更できるようコマンドライン引数の数を1つ増やす．
+\item 分枝限定法で，パラメータ変更を乱数で決定する．
+\item 各探索手法の実行時間を表示する．
+\item 状態空間の関係性をCSVファイルに出力する．
+\end{enumerate}
+
+1.に関しては、パラメータの変化のみであれば(ヒント)のように配列を用いる手法も取れると考えたが，幅優先探索と深さ優先探索はコストや評価値を用いずに探索を行う．これでは与えられた状態空間では常に結果が一定になってしまうため，状態空間そのものを変更出来るよう実装を行った．\par
+2.に関しては，ノードの生成を各探索ごとにしてswitch文で場合分けし,コマンドライン引数で指定できるようにした.分岐限定法では,ノードのコストを定義するところでランダム関数を用いることで0以上10未満の乱数を与えるようにした.\par
+3.に関しては，(ヒント)にあったようにSystem.currentTimeMillisメソッドを活用して実装した．\par
+4.に関しては，CSVファイル出力用にexportCsvメソッドを新しく作成し実装した．
+
+
+\subsection{実装}
+\subsubsection{幅優先探索・深さ優先探索の実装}
+幅優先探索・深さ優先探索ではパラメータの変更では探索順が変化しないので，手法で示した1.の実装を行うことで探索順を変更し比較を行えるようにした．\par
+この時ノードの数・開始ノードと終了ノードは変更せず，パラメータの値とノードの接続の関係性のみを変更することとした．\\
+
+さらに，幅優先探索と深さ優先探索は経路のコストを考えないため，それ以外の探索手法との比較は各々の探索手法のステップ数と，探索開始から終了までにかかる実行時間で行うこととした．\par
+ステップ数は各ノードを探索した回数であるとプログラムから分かったので，これが幅優先探索と深さ優先探索で最小になれば実行時間も最小になると考え，実装は各探索手法のステップ数を考えながら行った．\par
+この時2つ目のコマンドライン引数は，それぞれの探索の場合分けと同じ値を入力すると，それに対応した改良版の状態空間にノードが書き換わるようにした．またそれ以外の数を入力した場合は全て与えられた状態空間になるようにし，エラーが発生しないようにした．\\
+
+始めに，コマンドライン引数を2つ受け取るmainメソッドの実装をソースコード\ref{src:コマンドライン引数}に示す。
+
+\begin{lstlisting}[caption=mainメソッド,label=src:コマンドライン引数]
+public static void main(String[] args) {
+　if (args.length != 2) {
+　　System.out.println("USAGE:");
+	System.out.println("java Search [Number] [NodePattern]");
+	System.out.println("[Number] = 1 : Bredth First Search");
+	System.out.println("[Number] = 2 : Depth  First Search");
+	・・・
+	System.out.println("[NodePattern] = 1 : Bredth First Search is best");
+	System.out.println("[NodePattern] = 2 : Depth  First Search is best");
+	・・・
+	System.out.println("[NodePattern] = other : initial value");
+　}
+　・・・
+\end{lstlisting}
+
+%\vspace{25mm}
+さらに，受け取った引数を基に各々の状態空間の情報をSearchメソッドとmakeStateSpaceメソッドに渡すため，引数whichNodeとその操作を以下のように実装した。
+%\vspace{5mm}
+
+\begin{lstlisting}[caption=引数whichNodeと関連メソッド,label=src:whichNode]
+public static void main(String[] args) {
+　if (args.length != 2) {
+　・・・
+　} else {
+　　int which = Integer.parseInt(args[0]);
+　　int whichNode = Integer.parseInt(args[1]);
+　　switch (which) {
+　　　case 1:
+　　　// 幅優先探索
+　　　System.out.println("\nBreadth First Search");
+　　　(new Search(whichNode)).breadthFirst();
+　　　・・・
+　　}
+　Search(int whichNode) {
+　makeStateSpace(whichNode);
+}
+private void makeStateSpace(int whichNode) {
+　・・・
+　switch (whichNode) {
+　　case 1:
+　　・・・
+　}
+}
+\end{lstlisting}
+
+これ以降，switch文を用いた場合分けにより状態空間を変化させる．\\
+
+始めに，幅優先探索で変更した部分の状態空間のソースコードを示す．
+\begin{lstlisting}[caption=改良した部分の状態空間,label=src:幅優先探索]
+case 1:
+	//幅優先探索が最小ステップ数となるようノードの関係性・コスト・ヒューリスティック値の変更
+	node[2] = new Node("Hoolywood", 8);
+	・・・
+	node[1].addChild(node[3], 1);
+	node[1].addChild(node[4], 6);
+  	node[2].addChild(node[9], 9);
+	node[3].addChild(node[5], 5);
+	node[4].addChild(node[6], 4);
+	node[4].addChild(node[7], 2);
+	node[5].addChild(node[4], 1);
+	node[6].addChild(node[8], 7);
+	・・・
+	break;
+\end{lstlisting}
+
+次に，深さ優先探索で変更した状態空間のソースコードを示す．
+\begin{lstlisting}[caption=改良した部分の状態空間,label=src:深さ優先探索]
+case 2:
+	//深さ優先探索が最小ステップ数となるようノードの関係性・コスト・ヒューリスティック値の変更
+	node[1] = new Node("UCLA", 2);
+	・・・
+	node[1].addChild(node[3], 6);
+	node[2].addChild(node[3], 4);
+	node[2].addChild(node[4], 6);
+	node[3].addChild(node[5], 5);
+	node[3].addChild(node[6], 2);
+	node[4].addChild(node[6], 2);
+	node[5].addChild(node[7], 1);
+	node[5].addChild(node[8], 1);
+	node[6].addChild(node[7], 7);
+	node[6].addChild(node[8], 2);
+	node[7].addChild(node[9], 1);
+	・・・
+	break;
+\end{lstlisting}
+
+\subsubsection{分枝限定法の実装}
+Search.javaで改良を行った2.の乱数発生に関するソースコードを以下に示す.
+\begin{lstlisting}[caption=改良した部分の状態空間,label=src:分枝限定法]
+case 3:
+	//0以上10未満の乱数を生成し、コストとする
+	Random rand = new Random();
+
+	node[0].addChild(node[1], rand.nextInt(10));
+	node[0].addChild(node[2], rand.nextInt(10));
+	node[1].addChild(node[2], rand.nextInt(10));
+	node[1].addChild(node[6], rand.nextInt(10));
+	node[2].addChild(node[3], rand.nextInt(10));
+	node[2].addChild(node[6], rand.nextInt(10));
+	node[2].addChild(node[7], rand.nextInt(10));
+	node[3].addChild(node[4], rand.nextInt(10));
+	node[3].addChild(node[7], rand.nextInt(10));
+	node[3].addChild(node[8], rand.nextInt(10));
+	node[4].addChild(node[8], rand.nextInt(10));
+	node[4].addChild(node[9], rand.nextInt(10));
+	node[5].addChild(node[1], rand.nextInt(10));
+	node[6].addChild(node[5], rand.nextInt(10));
+	node[6].addChild(node[7], rand.nextInt(10));
+	node[7].addChild(node[8], rand.nextInt(10));
+	node[7].addChild(node[9], rand.nextInt(10));
+	node[8].addChild(node[9], rand.nextInt(10));
+	break;
+\end{lstlisting}
+
+\subsubsection{山登り法の実装}
+山登り法で変更したパラメータに関するソースコードを以下に示す．
+\begin{lstlisting}[caption=改良した部分の状態空間,label=src:山登り法]
+case 4:
+	//node[5]のヒューリスティック値を２->５と変更
+	node[5] = new Node("SanDiego", 5);
+	・・・
+	break;
+\end{lstlisting}
+
+\subsubsection{最良優先探索の実装}
+最良優先探索で変更したパラメータに関するソースコードを以下に示す．
+\begin{lstlisting}[caption=改良した部分の状態空間,label=src:最良優先探索]
+case 5:
+	//node[7]のヒューリスティック値を４->２と変更
+	node[7] = new Node("Pasadena", 2);
+	・・・
+	break;
+\end{lstlisting}
+
+\subsubsection{A*アルゴリズムの実装}
+A*アルゴリズムで変更したパラメータに関するソースコードを以下に示す．
+\begin{lstlisting}[caption=改良した部分の状態空間,label=src:A*アルゴリズム]
+case 6:
+	/*node[1]のヒューリスティック値を７->３に変更
+	*node[7]->node[8]のコストを１->７に変更
+	*node[7]->node[9]のコストを７->１に変更
+	*/
+	node[1] = new Node("UCLA", 3);
+	・・・
+	node[7].addChild(node[8], 7);
+	node[7].addChild(node[9], 1);
+	・・・
+	break;
+\end{lstlisting}
+
+\subsubsection{その他の実装}
+3.の各探索手法の実行時間を表示するプログラムは，以下のようにSystem.currentTimeMillisメソッドを実装した．
+
+\begin{lstlisting}[caption=実行時間計測機能を加えたmainメソッド,label=src:実行時間計測]
+public static void main(String[] args) {
+	・・・
+	} else {
+		・・・
+		long start = System.currentTimeMillis();
+		switch (which) {
+			・・・
+		}
+		long end = System.currentTimeMillis();
+		System.out.println("探索時間: " + (end - start) + "ms");
+	}
+}
+\end{lstlisting}
+
+4.の状態空間の関係性をCSVファイルに出力するプログラムは，以下のようにexportCsvメソッドを実装した．
+
+\begin{lstlisting}[caption=CSV出力のためのexportCsvメソッド(一部抜粋),label=src:CSV出力]
+public void exportCsv(List<Node> parentList, List<Node> childList, String fileName){
+	int i = 0;
+	int j = 0;
+	try {
+		// 出力ファイルの作成
+		FileWriter f = new FileWriter("C:\\Users\\Owner\\Desktop\\" + fileName + ".csv", false);
+		PrintWriter p = new PrintWriter(new BufferedWriter(f));
+		// ヘッダーを指定する
+		p.print("ParentNode:n");
+		p.print("ChildrenNode:m");
+		・・・
+		//内容をセットする
+		//親ノードの表示ループ
+		while(i < parentList.size()) {
+			p.print(parentList.get(i) + ",");
+			//子ノードの表示ループ
+			while(j < childList.size()) {
+				if(childList.get(j) != null) {
+					p.print(childList.get(j) + ",");
+					j++;
+				} else {
+					j++;
+					break;
+				}
+			}
+			i++;
+		}
+		// ファイルに書き出し閉じる
+		p.close();
+		System.out.println("ファイル出力完了！");
+	} catch (IOException ex) {
+		ex.printStackTrace();
+	}
+}
+\end{lstlisting}
+
+\subsection{実行例}
+各探索手法に対し，1つ目のコマンドライン引数で呼び出される探索手法と同じ数字の2つ目のコマンドライン引数がその探索手法の改良型となるようにプログラムを書き換えた．具体的には以下のように結果が表示される．\\
+\begin{lstlisting}
+Search.javaが含まれるディレクトリ > java Search 1 1
+<幅優先探索に合わせ改良した状態空間を幅優先探索で探索した結果>
+
+Search.javaが含まれるディレクトリ > java Search 4 6
+<A*アルゴリズムに合わせ改良した状態空間を山登り法で探索した場合の結果>
+
+Search.javaが含まれるディレクトリ > java Search 3 0
+<与えられた状態空間を分枝限定法で探索した場合の結果>
+\end{lstlisting}
+
+また，与えられた状態空間は次の図1のようになっており，これを改良した実行例を以下に示していく．
+\begin{figure}[!hbt]
+  	\begin{center}
+  		\includegraphics[scale=0.26]{image/default.png}
+	\end{center}
+  	\caption{与えられた状態空間}
+\end{figure}
+
+\subsubsection{幅優先探索の実行例}
+幅優先探索では状態空間そのものを変更したため，始めにそれを示す(図2)．\par
+\begin{figure}[!hbt]
+	\centering
+	\includegraphics[scale=0.26]{image/BFS.png}
+	\caption{幅優先探索が最小ステップ数になる状態空間}
+\end{figure}
+実行命令(java Search 1 1)により出力される結果は以下のようになる．
+\begin{lstlisting}
+Breadth First Search
+STEP:0
+OPEN:[L.A.Airport(h:0)]
+CLOSED:[]
+STEP:1
+OPEN:[UCLA(h:7), Hoolywood(h:8)]
+CLOSED:[L.A.Airport(h:0)]
+:
+:
+STEP:3
+OPEN:[Las Vegas(h:0), Anaheim(h:6), GrandCanyon(h:1)]
+CLOSED:[L.A.Airport(h:0), UCLA(h:7), Hoolywood(h:8)]
+*** Solution ***
+Las Vegas(h:0) <- Hoolywood(h:8) <- L.A.Airport(h:0)
+探索時間: 80ms
+\end{lstlisting}
+\subsubsection{深さ優先探索の実行例}
+深さ優先探索でも状態空間そのものを変更したため，まずそれを示す(図3)．\par
+\begin{figure}[!hbt]
+	\centering
+	\includegraphics[scale=0.26]{image/DFS.png}
+	\caption{深さ優先探索が最小ステップ数になる状態空間}
+\end{figure}
+実行命令(java Search 2 2)により出力される結果は以下のようになる．
+\begin{lstlisting}
+Depth First Search
+STEP:0
+OPEN:[L.A.Airport(h:0)]
+CLOSED:[]
+STEP:1
+OPEN:[UCLA(h:2), Hoolywood(h:4)]
+CLOSED:[L.A.Airport(h:0)]
+:
+:
+STEP:5
+OPEN:[Las Vegas(h:0), DisneyLand(h:2), Downtown(h:3), Hoolywood(h:4)]
+CLOSED:[L.A.Airport(h:0), UCLA(h:2), Anaheim(h:6), SanDiego(h:2), Pasadena(h:4)]
+*** Solution ***
+Las Vegas(h:0) <- Pasadena(h:4) <- SanDiego(h:2) <- Anaheim(h:6) <- UCLA(h:2) <- L.A.Airport(h:0)
+探索時間: 94ms
+\end{lstlisting}
+\subsubsection{分枝限定法の実行例}
+分枝限定法は乱数でパラメータを決めるため，実行結果(java Search 3 3)を二通り示す.
+\begin{lstlisting}
+Branch and Bound Search
+STEP:0
+OPEN:[L.A.Airport(h:0)(g:0)]
+CLOSED:[]
+STEP:1
+OPEN:[Hoolywood(h:4)(g:1), UCLA(h:7)(g:4)]
+CLOSED:[L.A.Airport(h:0)(g:0)]
+:
+:
+STEP:9
+OPEN:[Las Vegas(h:0)(g:14)]
+CLOSED:[L.A.Airport(h:0)(g:0), Hoolywood(h:4)(g:1), UCLA(h:7)(g:4), Downtown(h:3)(g:6), Anaheim(h:6)(g:7), Pasadena(h:4)(g:8), SanDiego(h:2)(g:8), GrandCanyon(h:1)(g:8), DisneyLand(h:2)(g:11)]
+*** Solution ***
+Las Vegas(h:0)(g:14) <- Pasadena(h:4)(g:8) <- Hoolywood(h:4)(g:1) <- L.A.Airport(h:0)(g:0)
+探索時間: 139ms
+\end{lstlisting}
+\begin{lstlisting}
+Branch and Bound Search
+STEP:0
+OPEN:[L.A.Airport(h:0)(g:0)]
+CLOSED:[]
+STEP:1
+OPEN:[Hoolywood(h:4)(g:4), UCLA(h:7)(g:9)]
+CLOSED:[L.A.Airport(h:0)(g:0)]
+:
+:
+STEP:3
+OPEN:[Las Vegas(h:0)(g:7), UCLA(h:7)(g:9), Anaheim(h:6)(g:10), DisneyLand(h:2)(g:10), Downtown(h:3)(g:11)]
+CLOSED:[L.A.Airport(h:0)(g:0), Hoolywood(h:4)(g:4), Pasadena(h:4)(g:6)]
+*** Solution ***
+Las Vegas(h:0)(g:7) <- Pasadena(h:4)(g:6) <- Hoolywood(h:4)(g:4) <- L.A.Airport(h:0)(g:0)
+探索時間: 87ms
+\end{lstlisting}
+
+\subsubsection{山登り法の実行例}
+パラメータを変更した実行結果(java Search 4 4)を以下に示す．
+\begin{lstlisting}
+Hill Climbing Search
+[UCLA(h:7), Hoolywood(h:4)]
+[Anaheim(h:6), Downtown(h:3), Pasadena(h:4)]
+[SanDiego(h:5), Pasadena(h:4)]
+[DisneyLand(h:2), Las Vegas(h:0)]
+*** Solution ***
+Las Vegas(h:0) <- Pasadena(h:4) <- Downtown(h:3) <- Hoolywood(h:4) <- L.A.Airport(h:0)(g:0)
+探索時間: 72ms
+\end{lstlisting}
+
+\subsubsection{最良優先探索の実行例}
+パラメータを変更した実行結果(java Search 5 5)を以下に示す．
+\begin{lstlisting}
+Best First Search
+STEP:0
+OPEN:[L.A.Airport(h:0)(g:0)]
+CLOSED:[]
+STEP:1
+OPEN:[Hoolywood(h:4), UCLA(h:7)]
+CLOSED:[L.A.Airport(h:0)(g:0)]
+:
+:
+STEP:3
+OPEN:[Las Vegas(h:0), DisneyLand(h:2), Downtown(h:3), Anaheim(h:6), UCLA(h:7)]
+CLOSED:[L.A.Airport(h:0)(g:0), Hoolywood(h:4), Pasadena(h:2)]
+*** Solution ***
+Las Vegas(h:0) <- Pasadena(h:2) <- Hoolywood(h:4) <- L.A.Airport(h:0)(g:0)
+探索時間: 99ms
+\end{lstlisting}
+
+\subsubsection{A*アルゴリズムの実行例}
+パラメータを変更した実行結果(java Search 6 6)を以下に示す．
+\begin{lstlisting}
+A star Algorithm
+STEP:0
+OPEN:[L.A.Airport(h:0)(g:0)(f:0)]
+CLOSED:[]
+STEP:1
+OPEN:[UCLA(h:3)(g:1)(f:4), Hoolywood(h:4)(g:3)(f:7)]
+CLOSED:[L.A.Airport(h:0)(g:0)(f:0)]
+:
+:
+STEP:4
+OPEN:[Las Vegas(h:0)(g:6)(f:6), Downtown(h:3)(g:7)(f:10), Anaheim(h:6)(g:8)(f:14), DisneyLand(h:2)(g:12)(f:14)]
+CLOSED:[L.A.Airport(h:0)(g:0)(f:0), UCLA(h:3)(g:1)(f:4), Hoolywood(h:4)(g:2)(f:6), Pasadena(h:4)(g:5)(f:9)]
+*** Solution ***
+Las Vegas(h:0)(g:6)(f:6) <- Pasadena(h:4)(g:5)(f:9) <- Hoolywood(h:4)(g:2)(f:6) <- UCLA(h:3)(g:1)(f:4) <- L.A.Airport(h:0)(g:0)(f:0)
+探索時間: 96ms
+\end{lstlisting}
+
+\subsubsection{CSVファイル出力の実行例}
+各探索ファイル出力を行う状態でプログラムを実行すると，先に記述した実行例の*** Solution ***の前で以下のように出力される．\\
+\begin{lstlisting}
+ParentList.size = 8(各探索により異なる)
+ChildList.size = 22(各探索により異なる)
+ファイル出力完了！
+\end{lstlisting}
+また，A*アルゴリズムではこれに加え，csv出力用 親ノード格納リストparentList，csv出力用 子ノード格納リストchildrenList，プログラム中で活用される変数gmn,hmn,fmnもステップの出力中に表示されるようになっている．
+
+\subsection{考察}
+与えられた状態空間で得られた結果とパラメータや状態空間を変化させ得られた結果をもとに，各探索手法について考察していく．
+
+\subsubsection{幅優先探索・深さ優先探索の考察}
+与えられた状態空間と，幅優先探索・深さ優先探索のために作成した状態空間の3つで各探索手法のステップ数と実行時間を表にまとめる(表1，表2，表3)．ここでまとめた実行時間は，各探索手法を10回計測した平均時間とした．\par
+実行環境はWindowsで，統合開発環境Eclipseに入っているjavaコンパイラとeclipseを使用しないjavaコンパイラでは実行時間が大きく変化することが分かった．そのため，今回はどちらの場合も実行時間の計測を行った．実行時間の単位は全てmsである．\par
+\begin{table}[htb]
+	\caption{各探索手法のステップ数(STEP)}
+	\begin{tabular}{|l|r|r|r|}\hline
+		探索手法 & 初期状態 & 幅優先探索最良 & 深さ優先探索最良\\ \hline \hline
+		幅優先探索 & 6 & 3 & 8\\ \hline
+		深さ優先探索 & 5 & 7 & 5\\ \hline
+		分枝限定法 & 7 & 9 & 9\\ \hline
+		山登り法 & ∞ & (5) & (6)\\ \hline
+		最良優先探索 & 5 & 5 & 6\\ \hline
+		A*アルゴリズム & 7 & 6 & 8\\ \hline
+	\end{tabular}
+\end{table}
+\begin{table}[htb]
+	\caption{Eclipseを使用する時の実行時間(ms)}
+		\begin{tabular}{|l|r|r|r|}\hline
+			探索手法 & 初期状態 & 幅優先探索最良 & 深さ優先探索最良\\ \hline \hline
+			幅優先探索 & 4.8 & 2.4 & 4.0\\ \hline
+			深さ優先探索 & 3.3 & 5.6 & 3.5\\ \hline
+			分枝限定法 & 5.0 & 2.9 & 4.2\\ \hline
+			山登り法 & ∞ & 1.5 & 2.6\\ \hline
+			最良優先探索 & 3.7 & 3.1 & 3.0\\ \hline
+			A*アルゴリズム & 5.1 & 2.8 & 3.4\\ \hline
+		\end{tabular}
+\end{table}
+\begin{table}[htb]
+	\caption{Eclipseを使用しない時の実行時間(ms)}
+		\begin{tabular}{|l|r|r|r|}\hline
+			探索手法 & 初期状態 & 幅優先探索最良 & 深さ優先探索最良\\ \hline \hline
+			幅優先探索 & 140.8 & 104.6 & 139.5\\ \hline
+			深さ優先探索 & 116.0 & 126.7 & 112.8\\ \hline
+			分枝限定法 & 141.9 & 140.1 & 157.2\\ \hline
+			山登り法 & ∞ & 87.4 & 92.5\\ \hline
+			最良優先探索 & 115.2 & 116.5 & 117.6\\ \hline
+			A*アルゴリズム & 135.7 & 142.7 & 140.2\\ \hline
+		\end{tabular}
+\end{table}
+ここから，幅優先探索と深さ優先探索の違いとその特徴の面と，それぞれの探索手法とその他の探索手法との違いと特徴を考察した．\\
+
+幅優先探索は今いるノードの子ノードの探索が全て終わってから次のノードの子ノードを探索するため，終了ノードが探索木の浅い位置にあると探索が早く終了する．対して深さ優先探索は，今いるノードの子ノードを次々に順に探索するため，終了ノードが探索する優先度の高い経路(先に探索される経路)にあると探索が早く終了する．このことをふまえ，各探索手法がより効率よくなる状態空間を考えたものが，図2，図3の状態空間である．\\
+
+また本題とは異なるが，Eclipse利用時とそうでないときの実行時間が大きく異なった原因も考えた．それぞれのJavaのバージョンを調べたところ，以下のようであることが分かった．
+
+\begin{table}[htb]
+	\begin{tabular}{l|l}
+		環境 & バージョン\\ \hline
+		Eclipse & JavaSE-11\\
+		Java & 9.0.1\\
+	\end{tabular}
+\end{table}
+このことから，Eclipseで利用しているJavaとコマンドプロンプトで利用するJavaではバージョンが異なっていたため，性能に大きな違いが出たのではないかと考えた．Eclipseは今回の課題で利用するためにインストールしたため，Javaのバージョンが新しくなっていたのではないかと考えられた．\\
+
+まず初めに，幅優先探索と深さ優先探索を比較する．\par
+与えられた状態空間では，パラメータを変化させてもステップ数は常に一定である．これは2つの探索手法がパラメータに依存しないことによる．これでは常に深さ優先探索の方がステップ数が少ないため，実行時間もパラメータに関わらず深さ優先探索の方が短いことが確認できた．そのため状態空間そのものを変更することで，幅優先探索の方がより少ないステップ数で探索が行える場合を考えた．\\
+
+幅優先探索と深さ優先探索は対照的な探索方法であるため，状態空間の関係性も対照的になるのではないかと考えた．そこでまず開始ノードの終了ノード以外の8つのノードを縦長と横長に並べる状態空間を考えた(図4，図5)．\\
+
+%\clearpage
+
+\begin{figure}[htbp]
+	\begin{minipage}{0.5\hsize}
+		\begin{center}
+			\includegraphics[scale=0.4]{image/pre1.png}\\
+		\end{center}
+		\caption{ノードを横長に並べた場合}
+		\label{fig:one}
+	\end{minipage}
+	\begin{minipage}{0.5\hsize}
+		\begin{center}
+			\includegraphics[scale=0.4]{image/pre2.png}\\
+		\end{center}
+		\caption{ノードを縦長に並べた場合}
+		\label{fig:two}
+	\end{minipage}
+\end{figure}
+
+しかし今回の状態空間では，各経路の終端は必ず終了ノードに接続されているため，図4の場合は深さ優先探索の方がステップ数が少なくなってしまう．そのため，対照的なノードの関係性だけでは，それぞれの探索のステップ数が必ずしも対照的になることはないと分かった．\par
+図5を実行すると想定通りに深さ優先探索の方がステップ数が少なくなったため，ノードの位置関係はこのままに矢印のみ増やすこととした(図3)．\\
+
+深さ優先探索は，先に探索した子ノードから優先的に探索を行う．今回のノードの条件では必ずどの経路も終了ノードにたどり着けるため，深さ優先探索は親ノードに戻って探索をやり直す必要がない．そのため最も効率が悪くなる場合は，先に探索する子ノードがより多くのノードを通して終了ノードにたどり着けば良いことが考えられた．そこからノードの構成を考え直した状態空間が，実行例で示した図2である．\par
+実行結果からステップ数を確認すると，図2の場合は幅優先探索が深さ優先探索より少なく，図3の場合は深さ優先探索の方が少なくなっていることが確認できる．同時に表2・表3から，実行時間も図2の状態空間では幅優先探索が，図3の状態空間では深さ優先探索が短くなっていることが確認できた．\\
+
+これらのことから全経路が終了ノードに収束する場合は，深さ優先探索は幅優先探索より少ないステップ数で探索できる場合が多いと考えられる．しかし，深さ優先探索の探索順を，初めに探索する経路が長くなるように状態空間を変化させることで，幅優先探索の方が効率の良い状態空間を作成することが出来ると分かった．\\
+
+次に，幅優先探索・深さ優先探索とその他の探索手法との比較により，これらの特徴や違いを考察する．\par
+幅優先探索・深さ優先探索と異なり，その他の探索手法はコストとヒューリスティック値をふまえて探索を行う．これらの探索手法は，幅優先探索・深さ優先探索より効率的な探索方法として考えられたものであるため，コストの概念をふまえた探索結果により出力される最短経路は，幅優先探索や深さ優先探索よりもその他の探索の方が良い経路となることがほとんどだと考えられる．ただし，ヒューリスティック値のみを用いる場合は，ヒューリスティック値の精度の高さによって得られる結果が変わり，良い結果になるとは限らないとも考えられる．\par
+出力結果はコストやヒューリスティック値により変化してしまうため，幅優先探索や深さ優先探索との比較は難しいと考えた．そこで，先と同様に比較にはステップ数と実行時間を用いることとした．\par
+先に作成した図2，図3の状態空間にコストとヒューリスティック値を与えることで，他の探索手法と比較を行った．\par
+図2，図3のようにコストとヒューリスティック値を与えた場合の結果が実行例に示した表1から表3である．表1から分かるように，図2の状態空間では幅優先探索が最小ステップ数となり，図3の状態空間では深さ優先探索が最小ステップ数となることが確認できる．山登り法はステップ数が実行結果に出力されなかったが，ヒューリスティック値を用いた深さ優先探索であるので，深さ優先探索と同様にしてステップ数を数えた．このようにステップ数だけで比較をするならば，幅優先探索や深さ優先探索もその他の探索手法より効率の良い探索が行えることが分かった．\\
+
+またこの時の実行時間も確認したところ，山登り法を除き，ほとんどの場合でステップ数が多いほど実行時間も長くなっていることが確認できた．表2の幅優先探索最良時の深さ優先探索と分枝限定法のように，ステップ数が多いにもかかわらず実行時間が短くなっている場合も見受けられたが，これはステップ数の変化があまり大きくないために実行時の別の環境要因が影響しているのではないかと考えられた．\par
+しかし，山登り法はステップ数が多い場合も実行時間が明らかに短くなっていることが確認された．これの原因として，ヒューリスティック値はコストよりも値へのアクセスが早く行えることや，出力時に表示する内容が他の探索手法よりも少ないことなどが影響しているのではないかと考えた．\\
+
+これらの結果から，探索するために訪れるノードの数は，コストやヒューリスティック値により幅優先探索や深さ優先探索の方が少なくなる場合が多いことが分かった．また，実行時間のほとんどがステップ数に影響することが確認できたので，幅優先探索や深さ優先探索の実行時間は他の探索手法より短くなることが多いことも分かった．しかし，今回は結果として得られた経路についてはふまえていないため，これを考慮すると幅優先探索や深さ優先探索はコスト面から効率の悪い探索手法になってしまうことも改めて確認できた．
+
+\subsubsection{分枝限定法の考察}
+分岐限定法はヒューリスティック値に頼らず,そこまでのノード間コストの合計が最も小さくなるようにノードをたどっていく探索方法である.また,openリストとcloseリストを用いて探索済みのノードを記録するため無限ループに陥る場合もない.\par
+これにより最後に得られる解は最適の経路になるが,余計なノードを展開する可能性が高く計算時間が長くなってしまうことがある.\par
+実際,今回の実行例の1つ目と2つ目では計算時間やステップ数に大きな差が出た.\par
+これらの実験結果やアルゴリズムの性質から,分岐限定法は最適解を求めたいときに適しているが,ノードの数が多くなるとステップ数が増え,計算時間が莫大になってしまう可能性があることが分かった.
+
+\subsubsection{山登り法の考察}
+山登り法はヒューリスティック値だけを用いた探索法である.\par
+従って、与えられているヒューリスティック値が正確でないと間違った経路を選択してしまい,場合によっては目的のノードにたどり着けないことがある.\par
+また,分岐限定法と異なり一度通ったノードを記憶しておくこともないので,今回のような探索木の場合は無限ループに陥ってしまうこともある.
+
+\subsubsection{最良優先探索の考察}
+最良推定法で初期のパラメータの探索を行うと図6のような木構造を持つ探索となる.\\
+
+\begin{figure}[htbp]
+ \begin{center}
+  \includegraphics[width = 10cm, pagebox = cropbox, clip]{最良優先探索ver1.pdf}
+ \end{center}
+ \caption[]{初期パラメータにおける木構造モデル}\label{fig:fig1.1}
+\end{figure}
+
+探索経路の解としては,
+\begin{center}
+[L.A.Airport→Hollywood→Pasadena→Las Vegas]
+\end{center}
+と4STEPで進めるはずが,探索ノード(親ノードの推移)としては,
+\begin{center}
+[L.A.Airport→Hollywood→DownTown→Sandiego→Pasadena→LasVegas]
+\end{center}
+と, 7STEPを踏んでいる. Hollywoodから次に進む際にPasadenaへ進むのではなく, 1度Downtownへ進んでいるのである. そのため,この改善策として, 「Pasadena:node[7]のヒューリスティック値:h(7)をDowntown:node[6]:h(6)よりも小さくする」方法を取る. そのパラメータ調整後の木構造が図7のようになる.\\
+
+\begin{figure}[htbp]
+ \begin{center}
+  \includegraphics[width = 10cm, pagebox = cropbox, clip]{最良優先探索ver2.pdf}
+ \end{center}
+ \caption[]{パラメータ調整後の木構造モデル}\label{fig:fig1.2}
+\end{figure}
+
+探索ノード(親ノードの推移)として,
+\begin{center}
+[L.A.Airport→Hollywood→Pasadena→Las Vegas]
+\end{center}
+と最適パスとなった.\\
+欠点としては, そのノードに固有なヒューリスティックな値を使って探索を進めていくので, すべてのノードのうちで最小のヒューリスティックの値をもつノードが無限に生成される場合は, 目標ノードに到達できない.\\
+
+\subsubsection{A*アルゴリズムの考察}
+初期のパラメータを用いて探索を行うと図8のような木構造を持つ探索となる.\\
+\begin{figure}[htbp]
+ \begin{center}
+  \includegraphics[width = 10cm, pagebox = cropbox, clip]{Astar_ver1.pdf}
+ \end{center}
+ \caption[]{初期パラメータにおける木構造モデル}\label{fig:fig1.3}
+\end{figure}
+
+探索経路の解としては,
+\begin{center}
+[L.A.Airport→UCLA→Hollywood→Pasadena→Las Vegas]
+\end{center}
+と5STEPで進めるはずが, 探索ノード(親ノードの推移)としては,
+\begin{center}
+[L.A.Airport→Hollywood→UCLA→Hollywood→Pasadena→DisneyLand→Dawntown→LasVegas]
+\end{center}
+と, 8STEPを踏んでいる.余分な探索として, 2箇所が上げられる.
+\begin{enumerate}
+ \item 始めにHollywood:node[2]に進まずに, UCLA:node[1]に進んでほしい.
+ \item 最後にPasadena:node[7]からDisneyLand:node[8]に進まず, LasVegas:node[8]に進んでほしい.
+\end{enumerate}
+
+よって, これらを改善するために以下の2つを変更してみる.
+\begin{enumerate}
+ \item UCLA:node[1]のヒューリスティック値:h(1)=7をHollywood:node[2]のヒューリスティック値:h(2)=4よりも小さくする. (既にコストgの値は小さいので.)
+ \item Pasadena:node[7]からDisneyLand:node[8]のコストをPasadena:node[7]からDisneyLand:node[8]のコストよりも小さくする. (既にヒューリスティック値はh(9)よりも小さいので.)\\
+その結果, 下図9のようになった.
+\begin{figure}[htbp]
+ \begin{center}
+  \includegraphics[width = 10cm, pagebox = cropbox, clip]{Astar_ver2.pdf}
+ \end{center}
+ \caption[]{2つのパラメータ変更後の木構造モデル}\label{fig:fig1.3}
+\end{figure}
+\end{enumerate}
+これによって,探索経路の解と同じ5STEPの探索ノード(親ノード)の推移を作ることができた.\par
+なお, 始めの分岐でUCLA:node[1]を選ばず, Hollywood:node[2]を選ぶようにパラメータを調整することで, 4STEP探索も可能となる.(木構造は最良優先探索と同様になるので省略.)
+
+\subsubsection{CSV出力の考察}
+実際に探索手順を追っていくために,"知能処理学"で学んだような親ノード,子ノードと展開されるリストとそれぞれのコストやヒューリスティックの値を表を実際に手で書いた. それをプログラムで出力させてみようとまずは自分の担当だったA*アルゴリズムを用いてプログラムを書いた. Searchクラスの中のaStarメソッドの中で, 該当する親, 子ノードを取得し, リストに格納していく. 探索がすべて終わったところで, 用意したexportCSVメソッドを呼び出し, 出力させる. プログラムのポイントは, 全てのノードデータを集めてから, 1枚のcsvファイルを出力させなければならないが, 各STEPごとで子ノードの数も違い, またどこまでが1STEPの情報なのか判別しないといけないことである. これは, 1STEPが終了するごとに子ノードリストにnullを入れることで解決した. exportCSVメソッド内でループを回して順にリストの中身を取る際に, 子ノードリストに含まれているnullの有無で条件判別ができ, STEPごとにcsvファイルを改行させることに成功した.\\
+
+　試して分かったことだが, Nodeクラスでノードインスタンスを作る際に, そのノードにコスト:g, ヒューリステック値:h, 評価関数値:f がすでに含まれているので, わざわざ別個でそれらのデータを取る必要はなかった. それらの結果, ただ親ノードとそれに続く子ノードを出力し, csvファイルに保存するだけのお粗末な仕上がりとなってしまった. ただそのおかげで, コストやヒューリステック値の使用有無によらず, どの探索でも使用できる汎用性の高いプログラムとなった.
+
+\section{必須課題1-2}
+\begin{screen}
+  グループでの進捗管理や成果物共有などについて，工夫した点や使ったツールについて考察せよ.
+\end{screen}
+
+必須課題1-2は実装を伴わない課題であるため，実装と実行例は記述せずに手法と考察のみを記す．
+
+\subsection{手法(工夫した点)}
+今回のチーム開発を行うに当たって,チーム8では主にGitHubを活用することによって,進捗管理と成果物共有を行った.\\
+まず,はじめに本講義用のOrganizationを作成した.Organization名はNITechProgrammingTeam8とした. \\
+Organizationにチームメンバー全員を招待し,第一回課題用のリポジトリWork1を作成した(図10). \\
+（OrganizationのURL：\url{https://github.com/NITechProgrammingTeam8}）\\
+（RepositoryのURL：\url{https://github.com/NITechProgrammingTeam8/Work1}）\\
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/organization_image.png}
+  \caption{作成したOrganization}
+\end{figure}
+
+また,コミュニケーションやソースコードの共有を目的として,Slackを導入した. 
+
+\subsection{考察}
+次に，導入したこれらのツールについてそれぞれ細かく分類して考察を行う．
+
+\subsubsection{GitHubの導入}
+GitHubで主に利用した機能を以下に列挙する. 
+
+\begin{description}
+  \item[Project機能] Work1用のプロジェクトを作成し,進捗管理を行うためのカンバンとする.
+  \item[Issues機能] 課題をいくつかのタスクに分解することにより,それぞれに担当者を割り当てる.
+  \item[MileStones機能] 個々のIssuesを完了するまでの期間を定める.
+  \item[PullRequest機能] 各Issuesと結びつけることによって,タスクと実際の作業を結びつける.
+\end{description}
+ここから，各機能に対する運用と考察を行う．
+
+\subsubsection{Project機能の運用と考察}
+今回はWork1というリポジトリに対応したProjectを作成した.
+このProjectはカンバンと呼ばれ,プロジェクト全体の進行度を視覚的に把握するのに最適である. \\
+今回はタスクの進行度を以下の3種類に分類し,Columnに登録した. \\
+さらに,PRへの割当やMergeといったイベントを完了することによって,タスクの進行度が変化するように自動化を行った.
+\begin{description}
+  \item[To do] これから着手する予定のタスク.PR発行時にDevelopingに移動する.
+  \item[Developing] 開発中のタスク.Merge後にDoneに移動する.
+  \item[Done] 完了後のタスク.
+\end{description}
+発行したIssuesをタスクとすることでカンバンにおけるカードとした.
+以下に,Projectの画像を添付する(図11).
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.25]{git_image/project_image.png}
+  \caption{Project機能を用いたタスク管理}
+\end{figure}
+
+\subsubsection{Issues機能の運用と考察}
+今回はタスクに対応したIssuesを発行した.
+それぞれのIssuesには最低1人の担当者を割り当て,MileStones機能により期日を設けた. \\
+次のようにタスクを分解し,Issuesを発行した.
+\begin{description}
+  \item[幅優先探索]
+  \item[深さ優先探索]
+  \item[最良優先探索]
+  \item[A*アルゴリズム]
+  \item[分枝限定法]
+  \item[山登り法]
+  \item[GitHub管理]
+  \item[GUI設計]     
+\end{description}
+また,個々のタスクはさらに粒度の細かい作業に分解され,それぞれに対してチェック欄を設け,メンバー全体が各々の進捗状況を細かく確認できる仕様にした.
+以下に,Issuesの画像を添付する(図12,13).
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/issues_list_image.png}
+  \caption{Issues一覧}
+\end{figure}
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/issues_image.png}
+  \caption{Issues機能を用いたタスク割り当てとタスク分解}
+\end{figure}
+
+%\clearpage
+
+\subsubsection{MileStones機能の運用と考察}
+今回は個々のタスクを終了すべき期日をMileStones機能により設定した.
+設定したMileStonesは以下の通りで，その画像が次ページ図14,図15である. \\
+
+\begin{description}
+  \item[探索アルゴリズムの実装] 10/10(木)
+  \item[GitHubの設定等] 10/10(木)
+  \item[GUIの実装] 10/13(日)
+  \item[レポートの作成] 10/13(日)
+\end{description}
+
+\clearpage
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/milestones_list_image.png}
+  \caption{MileStones一覧}
+\end{figure}
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/milestones_image.png}
+  \caption{MileStones機能を用いたIssuesの期日管理}
+\end{figure}
+
+\subsubsection{PullRequest機能の運用と考察}
+今回はIssues単位でPRを発行し,紐づけるものとする. \\
+PRを行うことによって,変更をmasterブランチにMergeする前にレビューを行い,事前に問題点などを吟味することができる. \\
+また,masterとの差分によって変更点を視覚的に示すことが可能なため,メンバーの詳細な作業内容を把握しやすく,ソースコードの共有が容易となる. \\
+さらに,何か議論がある場合には,PR上で当該コードを指定してコメントを残すことができるため,具体性が増すメリットがある. \par
+以上のようにPR機能を用いることによって,ソースコードの品質を維持するだけでなく,円滑なコミュニティを形成することが可能となる.以下にその画像を示す(図16,17)．
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/pull_request_detail_image.png}
+  \caption{PRの差分詳細}
+\end{figure}
+
+%\clearpage
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/pull_request_comment_image.png}
+  \caption{PRのレビュー機能}
+\end{figure}
+
+
+\subsubsection{チームメンバーへのレクチャー}
+チーム開発においては必須と言えるGitHubだが,概念的な理解が必要かつ多機能であるため,学習コストも非常に大きいというデメリットも存在する.
+しかし,今後の課題を想定すると,早い段階でGitHubを導入することにより,メンバー全員にGit管理の習慣を定着させることが最善であると判断した.
+したがって,学習コストというデメリットを克服する必要があると考えられる.\\
+
+私は,そのために基本的なGitコマンドの解説や手順を概念的な理解と共に学習できるようにREADME.mdを作成した.
+以下に,実際に作成したものを示す.\\
+
+%\clearpage
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/read_me_1.png}
+  \caption{README.mdその1}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/read_me_2.png}
+  \caption{README.mdその2}
+\end{figure}
+
+%\newpage
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/read_me_3.png}
+  \caption{README.mdその3}
+\end{figure}
+
+\subsubsection{Slackの導入}
+Slackで専用のワークスペースを作成し,複数のチャンネルを作成した.
+具体的には,今回の課題用のチャンネル\#work1と,GitHub運用についてのトピックスを扱うチャンネル\#githubを作成した.
+
+\begin{figure}[!hbt]
+  \centering
+  \includegraphics[scale=0.20]{git_image/slack_image.png}
+  \caption{Slackでの専用ワークスペース}
+\end{figure}
+
+\section{発展課題1-3}
+\begin{screen}
+Search.javaの探索過程や最終的に得られた順路をユーザに視覚的に示すGUIを作成せよ.
+\end{screen}
+この課題では，GUI全般のSwingを用いた実装を行った．
+
+\subsection{手法}
+GUIを実装するにあたり，以下のような方針を立てた．
+\begin{enumerate}
+\item 探索空間における各要素（ノードや経路）を表示する．
+\item 要素に付随する値を入力するための入力ボックスを表示する.
+\item 探索を選択するためのボタンと，実行ボタンを表示する．
+\item 入力ボックスやボタンで入力した値をSearch.javaに反映し，実行する．
+\item 得られた経路をGUIに反映する．
+\end{enumerate}
+
+1．に関して，ユーザーがなるべく直感的に理解できるようにすべく，表は用いずに１つの図の形式で完結するような仕様とした．\\
+
+２．に関して，各要素とセットにして図中に入力ボックスを埋め込むことで，より直感的な入力を可能とした．また，入力ボックスには数値の入力に適したJSpinnerクラスを用いた．\\
+
+３．に関して，探索の選択には，選択肢の表示に適したJRadiButtonクラスを用いた．値の反映にはActionListenerインターフェースを用いて，Search.javaの方も値を受け取って実行できるように改良した．\\
+
+４．に関して，Search.javaから探索結果を渡すように改良し，受け取った結果を経路に再描写することで，ユーザーが視覚的に経路を得ることができる仕様とした．\\
+
+\subsection{実装}
+
+実装にあたり，主に下記のサイトを参考にした． \\
+
+TATSUO IKURA： 『Swingを使ってみよう - Java GUIプログラミング』 https://www.javadrive.jp/tutorial/ (2019/10/15アクセス) \\
+
+SearchGUI.javaには以下のクラスが含まれる.
+\begin{itemize}
+\item SearchGUI: メソッドmain, searchButtons, actionPerformedを実装したクラス
+\item NodePanel: メソッドupdateと各種ゲッターを実装したノードに関するパネルを操作するためのクラス
+\item PathPanel: メソッドpaintComponent, paintArrows, setShortestDistance, getMidPoints, execHor, execVer, update, forRepaintを実装した経路に関するパネルを操作するためのクラス
+\end{itemize}
+
+Search.javaは以下のように改良した.
+\begin{itemize}
+\item Searchクラスに，SearchGUI.java用の実行メソッドexecを追加．
+\item Nodeクラスに，値の更新のためのメソッドsetHValue, remakeChildを追加．
+\item Nodeクラスに値初期化のためのメソッドresetを追加．
+\end{itemize}
+
+ここから，各々の実装方法について詳細を述べる．
+
+\subsubsection{探索空間における各要素（ノードや経路）を表示するまで}
+SearchGUIクラスではまず，フレームの中にmainPanelとsubPanelの２つのパネルを生成する．
+
+mainPanelには経路やノードを格納するためのパネルを挿入した．ノードのパネルはJButtonクラスとJSpinnerクラスを用いて簡単にできるが，経路のパネルは線の描写が必要であるため，やや複雑なpaintComponentメソッドを拡張して用いる必要があった．
+
+paintComponentの複雑な点は，このメソッドによって行われる描写は実行時に１度限りであるという点である．描写をパネルごとに分けて行いたかったので，その仕様は解決すべき課題となった．そこで経路のパネル用のクラスPathPanelを用意し，その中でpaintComponentメソッドを実装した．これによりインスタンスごとに描写呼び出しが行われて，経路を各パネルに分けることができた．
+
+次に，表示についての課題が発生した．教科書通りのような経路図を表示するためには，各パネルを自由な位置に指定する必要があった．Swingには表を表示するのに適したレイアウトは数多くあるが，図を表示するためのレイアウトをあまり見つけることはできず，選択肢としては以下の２つの方法があった．
+\begin{enumerate}
+\item レイアウトマネージャーを無効にしてコンポーネントを座標指定で配置する．
+\item SpringLayoutクラスを用いてコンポーネントを他のコンポーネントとの相対位置で指定して配置する．
+\end{enumerate}
+
+１．の方法のほうが簡単ではあるが，実行環境に依存するという問題があるため，２．の方法を用いて実装した．そうすると，経路の表示について，出発地と到着地のノードの座標から，その相対座標を計算する必要があった．そこで，getMidPointsメソッドではノードのパネル４面の各座標を計算し，setShortestDistanceメソッドを用いてノード間の最短距離を計算することで実装した．
+
+getMidPointsメソッドをソースコード\ref{mid}に，
+setShortestDistanceメソッドをソースコード\ref{dist}に示す．
+
+\begin{lstlisting}[caption=getMidPointsメソッド, label=mid]
+    Point[] getMidPoints(Rectangle r) {
+        Point[] midPoints = new Point[4];
+        for (int i = 0; i < midPoints.length; i++) {
+            midPoints[i] = new Point();
+        }
+        midPoints[0].setLocation(r.x + r.width / 2.0, r.y); // 上の中点
+        midPoints[1].setLocation(r.x + r.width, r.y + r.height / 2.0); // 右の中点
+        midPoints[2].setLocation(r.x + r.width / 2.0, r.y + r.height / 2.0); // 下の中点
+        midPoints[3].setLocation(r.x, r.y + r.height / 2.0); // 左の中点
+        return midPoints;
+    }
+\end{lstlisting}
+
+\begin{lstlisting}[caption=setShortestDistanceメソッド, label=dist]
+    void setShortestDistance(Rectangle source, Rectangle distance) {
+        Point[] fromMidPoints = getMidPoints(source);
+        Point[] toMidPoints = getMidPoints(distance);
+
+        double min = Double.MAX_VALUE;
+        for (int i = 0; i < 4; i++) {
+            Point from = fromMidPoints[i].getLocation();
+            for (int j = 0; j < 4; j++) {
+                Point to = toMidPoints[j].getLocation();
+                double value = (from.getX() - to.getX()) * (from.getX() - to.getX())
+                        + (from.getY() - to.getY()) * (from.getY() - to.getY());
+                if (value < min) {
+                    min = value;
+                    start = from;
+                    end = to;
+                }
+            }
+        }
+    }
+\end{lstlisting}
+
+次に，経路のパネルに，コストを格納するためのパネルを埋め込むためには，親となるパネルを大きめにする必要がある．そこで，int型のフィールドgraceを作り，相対座標にこの値を考慮することで，パネルの大きさに余裕を持たせることができた．
+
+\subsubsection{要素に付随する値を入力するための入力ボックスを表示するまで}
+まず，経路の初期値を得るためにSearch.javaを実行し，得られたノードを以下のようなMapで管理した．
+
+\begin{lstlisting}[caption=mainメソッドの一部, label=map]
+        for (int i = 0; i < 10; i++) {
+            map.put(node[i], new NodePanel(node[i]));
+        }
+\end{lstlisting}
+
+NodePanelクラスにおいて，これのインスタンスを親のパネルとし，ノードのラベルと値を格納するための入力ボックスを配置した．レイアウトには２行１列のGridLayoutクラスを利用した．
+NodePanelのコンストラクタをソースコード\ref{node}に示す．
+
+\begin{lstlisting}[caption=NodePanelのコンストラクタ, label=node]
+    NodePanel(Node node) {
+        id = counter++;
+        this.node = node;
+        setLayout(new GridLayout(2, 1));
+        setBackground(Color.ORANGE);
+        setBorder(new BevelBorder(BevelBorder.RAISED));
+
+        JLabel label = new JLabel(id + ": " + node.getName());
+        model = new SpinnerNumberModel(node.getHValue(), 0, 9999, 1);
+        JSpinner spinner = new JSpinner(model);
+        spinner.setPreferredSize(new Dimension(50, 25));
+
+        add(label);
+        add(spinner);
+    }
+\end{lstlisting}
+
+\subsubsection{探索を選択するためのボタンと，実行ボタンを表示するまで}
+探索を選択するためのボタンにはJRadioButtonクラスを用いた．複数選択を許可しないために，ButtonGroupクラスを用いた．
+これらと実行ボタンを含んだパネルを生成するsearchButtonsメソッドをソースコード\ref{select}に示す．
+
+\begin{lstlisting}[caption=searchButtonsメソッド, label=select]
+    JPanel searchButtons() {
+        JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
+    
+        radio = new JRadioButton[6];
+        radio[0] = new JRadioButton("幅優先探索");
+        radio[1] = new JRadioButton("深さ優先探索");
+        radio[2] = new JRadioButton("分岐限定法");
+        radio[3] = new JRadioButton("山登り法");
+        radio[4] = new JRadioButton("最良優先探索");
+        radio[5] = new JRadioButton("A*アルゴリズム");
+        ButtonGroup group = new ButtonGroup();
+        for (int i = 0; i < radio.length; i++) {
+            group.add(radio[i]);
+            p.add(radio[i]);
+        }
+        
+        JButton button = new JButton("実行");
+        button.addActionListener(this);
+        p.add(button);
+
+        return p;
+    }
+\end{lstlisting}
+
+\subsubsection{入力ボックスやボタンで入力した値をSearch.javaに反映し，実行するまで}
+まず，search.javaを反映した値を用いて再実行するために，再実行用のメソッドexecを実装した．
+
+次に，実行ボタンを押したときに入力した値を反映するためには，ActionListenerインターフェースのactionPerformedメソッドを実装する必要がある．ノードの値，探索の種類，コストの値を全て反映し実行する，
+actionPerformedメソッドの前半をソースコード\ref{act1}に示す．
+
+\begin{lstlisting}[caption=actionPerformedメソッドの前半, label=act1]
+    public void actionPerformed(ActionEvent e) {
+        for (NodePanel p : map.values()) {
+            p.getNode().reset();
+            p.update((Integer)p.getModel().getValue()); // ヒューリスティック値の変更を反映
+        }
+
+        for (int i = 0 ; i < radio.length; i++){ // 探索の選択
+            if (radio[i].isSelected()){
+              which = i + 1;
+            }
+        }
+
+        for(int i = 0; i < paths.size(); i++) {
+            PathPanel p = paths.get(i);
+            p.update((Integer)p.getModel().getValue()); // コストの変更を反映
+        }
+        
+        ArrayList<Node> route = search.exec(which); // 再実行
+\end{lstlisting}
+
+\clearpage
+
+\subsubsection{得られた経路をGUIに反映するまで}
+再描写にはrepaintメソッドを用いる必要がある．これにより，paintComponentメソッドの再度呼び出しが行われるため，描写の条件による分岐をpaintComponent側で用意する必要がある．そこでPathPanelクラス内にboolean型のフィールドpassを用意し，forRepaintメソッド内で状態を確認，更新することで必要な経路のみ色を変えるような仕様にすることができた．また，Search.javaのexecメソッドの戻り値を，通るノードのみ格納したリストし，それを用いることで以上の操作を容易にした．
+
+得られた経路を反映する，
+actionPerformedメソッドの後半をソースコード\ref{act2}に示す．
+
+\begin{lstlisting}[caption=actionPerformedメソッドの後半, label=act2]
+        for(int i = 0; i < paths.size(); i++) {
+            PathPanel p = paths.get(i);
+            for(int j = 0; j < route.size() - 1; j++) {
+                if(p.forRepaint(route.get(j), route.get(j + 1))) {
+                    break;
+                }
+            }
+            p.repaint();
+        }
+    }
+\end{lstlisting}
+
+\clearpage
+
+\subsection{実行例}
+SearchGUIを実行したところ，以下のような画面が得られる．
+
+\begin{figure}[!hbt]
+  	\begin{center}
+  		\includegraphics[scale=0.50]{scs1.png}
+	\end{center}
+  	\caption{初期状態}
+\end{figure}
+\clearpage
+%%%%
+
+幅優先探索を選択し，実行したところ，以下のような画面が得られる．
+
+\begin{figure}[!hbt]
+  	\begin{center}
+  		\includegraphics[scale=0.50]{scs2.png}
+	\end{center}
+  	\caption{幅優先探索の実行}
+\end{figure}
+\clearpage
+%%%%
+
+同様にしてA*アルゴリズムを実行したところ，以下のような画面が得られる．
+
+\begin{figure}[!hbt]
+  	\begin{center}
+  		\includegraphics[scale=0.50]{scs3.png}
+	\end{center}
+  	\caption{A*アルゴリズムの実行}
+\end{figure}
+\clearpage
+%%%%
+
+\subsection{考察}
+初めてSwingを使ってみて，ボタンや入力ボックスを用いた表形式のGUIは作りやすそうだと感じた一方で，今回実装したような図形式のGUIは大変であると感じた．そもそも，SpringLayoutクラスによる相対座標の指定となると，実行と表示を繰り返しながら試行的に作っていかねばならず，また，相対座標というもの自体，パネルを階層的に作っている中で，正しく相対すべき相手との座標になっているかなどの点で間違いやすいと感じた．
+
+一方で，マウスを使ったパネルの操作から，座標の取得もできるようなので，あらかじめそういったプログラムを作り，それによる座標の取得と保持を上手に実装できれば，Swingにおける自由な配置でのGUI制作も，より簡単なものになると考えられる．
+
+また，表示面では，paintComponentメソッドの扱いも難しかった．関連する情報の載っているサイトがあまり見つからず，どのように扱えばよいのか理解するのに時間を要した．このメソッドは実行時に自動的に１度だけ呼び出されることが難点だと感じたが，インスタンスごとにこのメソッドを持たせることで，より自由で部分的な実行を可能にすることができた．このように，制約のあるものは，大元から変えてあげることや，javaであるならばオブジェクト指向を用いた分解ができないかを第一に考えることこそが，より迅速な問題解決につながると考えられる．
+
+また，経路の表示には矢印を用いるよう試みたが，先述した相対座標の難しさ等もあり，上手に表示できなかったため断念した．また，矢印では先端部分の重なり等の問題等もあるため，今回のように"0 to 2"のようなラベルで表現した方が，誤解を減らす上でも役立ったと考えられる．しかし，経路同士の重なりを防ぐことはできないため，より誤解を減らすための方法として，線を曲線にすることや，線を縁取ることでより誤解の少ない表示ができるのではないかと考えられる．
+
+また，今回NodePanelやPathPanelといったクラスに分解したことで，SearchGUIクラスのコードの複雑さを軽減することができた．これらのクラスは，実装中に分解できるんじゃないかと思い，後で分解したものであったので，今後はコードを書く前からクラスやメソッドとして取り出せないかを考えるようにすれば，より効率的なオブジェクト指向におけるプログラミングが見込めると考えられる．
+
+Swingにおけるパネルについても，どこを一纏めにするかを予め考慮しておくことで，混乱せずにGUIの実装が見込めると考えられる．
+
+
+\section{感想}
+グループレポートを個人レポートから集約する際に，言葉が重ならないようにしたり，見やすく並び替えたりしたため，思っていた以上に時間がかかってしまった．もっと効率よくレポートをまとめられるようにしたいと感じた．\par
+各課題に対する感想は，それぞれの個人レポートを参考にされたい．
+
+% 参考文献
+\begin{thebibliography}{99}
+\bibitem{Java新} 新谷虎松『Javaによる知能プログラミング入門』コロナ社，2002年．
+\bibitem{Java旧} 新谷虎松，大囿忠親，白松俊『知識システムの実装基礎』コロナ社，2012年．
+\bibitem{J1} Samurai\ Blog\ Javaのバージョンを確認する方法(バージョンの切り替えも解説)\\
+\url{https://www.sejuku.net/blog/62105} （2019年10月13日アクセス）.
+\bibitem{J3} Eclipseで使用するJDKを確認します\\
+\url{itdoc.hitachi.co.jp/manuals/link/cosmi_v0870/APFG/EU020018.HTM} （2019年10月13日アクセス）.
+\bibitem{G} Graphviz をインストールする\\
+\url{ruby.kyoto-wu.ac.jp/info-com/Softwares/Graphviz/} （2019年10月13日アクセス）.
+\bibitem{G1} Graphvizの使い方を例題で覚える\\
+\url{https://www.write-ahead-log.net/entry/2016/03/04/220933} （2019年10月13日アクセス）.
+\bibitem{G2} データのビジュアル化を最小の労力で\\
+\url{www.showa-corp.jp/special/graphtools/graphviz.html} （2019年10月13日アクセス）.
+\bibitem{G3} Pynote\ Graphviz-ノードの属性\\
+\url{pynote.hatenablog.com/entry/pygraphviz-node-attributes#ノードの形状} （2019年10月13日アクセス）.
+\bibitem{表組み} Latexコマンド集\ 表組みの基本\\
+\url{www.latex-cmd.com/fig_tab/table01.html} （2019年10月13日アクセス）.
+\bibitem{notty} LaTex 箇条書き --著：LaTexコマンド集\\
+\url{http://www.latex-cmd.com/struct/list.html}（2019年10月13日アクセス）.
+\bibitem{notty} java CSV出力 --著：TECH Pin \\
+\url{https://tech.pjin.jp/blog/2017/10/17/【java】csv出力のサンプルコード}（2019年10月13日アクセス）.
+\bibitem{notty} java List配列処理と変換 --著：Samurai Blog \\
+\url{https://www.sejuku.net/blog/16155}（2019年10月13日アクセス）.
+\bibitem{notty} Gitでブランチを作成する方法 --著：ProEngineer \\
+\url{https://proengineer.internous.co.jp/content.columnfeature/7633}（2019年10月13日アクセス）.
+\bibitem{notty} Gitレポジトリの変更と取得 --著：GitHub ヘルプ\\
+\url{https://help.github.com/ja/articles/getting-changes-from-a-remote-repository}（2019年10月13日アクセス）.
+\bibitem{notty} 新入社員におくるGitHubでのプロジェクト管理の初歩 --著：hayato ki \\
+\url{https://qiita.com/gumimin/items/63dcb36d4730213bd63a} （2019年10月7日アクセス）.
+\bibitem{GUI} TATSUO IKURA： 『Swingを使ってみよう - Java GUIプログラミング』 \\
+\url{https://www.javadrive.jp/tutorial/}(2019年10月15日アクセス).
+\end{thebibliography}
+
+\end{document}
