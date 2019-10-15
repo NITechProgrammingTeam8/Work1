@@ -12,20 +12,18 @@ public class SearchGUI extends JFrame implements ActionListener {
     Node[] node;
     ArrayList<PathPanel> paths;
 
-    {
-        which = 0;
-        search = new Search(which);
-        map = new HashMap<>();
-        node = search.getNode();
-        paths = new ArrayList<>();
-    }
-
     public static void main(String args[]) {
         SearchGUI frame = new SearchGUI("探索");
         frame.setVisible(true);
     }
 
     SearchGUI(String title) {
+        which = 0;
+        search = new Search(which);
+        map = new HashMap<>();
+        node = search.getNode();
+        paths = new ArrayList<>();
+
         setTitle(title);
         int appWidth = 1200;
         int appHeight = 700;
@@ -341,10 +339,6 @@ class PathPanel extends JPanel {
 
     void update(int value) {
         par.getNode().remakeChild(child.getNode(), value);
-    }
-
-    NodePanel par() {
-        return par;
     }
     
     boolean forRepaint(Node to, Node from) {
