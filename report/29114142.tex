@@ -1,0 +1,358 @@
+\documentclass[12pt]{jarticle}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{url}
+\usepackage{listings,jlisting}
+\usepackage{ascmac}
+\usepackage{amsmath,amssymb}
+
+%ここからソースコードの表示に関する設定
+\lstset{
+  basicstyle={\ttfamily},
+  identifierstyle={\small},
+  commentstyle={\smallitshape},
+  keywordstyle={\small\bfseries},
+  ndkeywordstyle={\small},
+  stringstyle={\small\ttfamily},
+  frame={tb},
+  breaklines=true,
+  columns=[l]{fullflexible},
+  numbers=left,
+  xrightmargin=0zw,
+  xleftmargin=3zw,
+  numberstyle={\scriptsize},
+  stepnumber=1,
+  numbersep=1zw,
+  lineskip=-0.5ex
+}
+%ここまでソースコードの表示に関する設定
+
+\title{知能プログラミング演習II 課題1}
+\author{グループ8\\
+  29114142 湯浅範子\\
+}
+\date{2019年10月13日}
+
+\begin{document}
+\maketitle
+
+\paragraph{提出物} rep1
+\paragraph{グループ} グループ8
+\paragraph{メンバー}
+\begin{tabular}{|c|c|c|}
+  \hline
+  学生番号&氏名&貢献度比率\\
+  \hline\hline
+  29114003&青山周平&NoData\\
+  \hline
+  29114060&後藤拓也&NoData\\
+  \hline
+  29114116&増田大輝&NoData\\
+  \hline
+  29114142&湯浅範子&NoData\\
+  \hline
+  29119016&小中祐希&NoData\\
+  \hline
+\end{tabular}
+
+
+
+\section{課題の説明}
+\begin{description}
+\item[必須課題1-1]Search.javaの状態空間におけるパラメータ（コストや評価値）を様々に変化させて実行し，各探索手法の違いを説明せよ. \\
+\hspace{4mm}具体的には，変化させたパラメータと探索結果（最短パス探索の成否，解を返すまでのステップ数，etc.）の関係を，探索手法毎に表やグラフ等にまとめよ．それらの結果を参照して考察を行い，各探索手法の違いを説明せよ. 
+\item[必須課題1-2] グループでの進捗管理や成果物共有などについて，工夫した点や使ったツールについて考察せよ.
+\item[発展課題1-3] Search.javaの探索過程や最終的に得られた順路をユーザに視覚的に示すGUIを作成せよ. 
+\end{description}
+
+
+\section{必須課題1-1}
+\begin{screen}
+\hspace{4mm}Search.javaの状態空間におけるパラメータ（コストや評価値）を様々に変化させて実行し，各探索手法の違いを説明せよ. \\
+\hspace{4mm}具体的には，変化させたパラメータと探索結果（最短パス探索の成否，解を返すまでのステップ数，etc.）の関係を，探索手法毎に表やグラフ等にまとめよ．それらの結果を参照して考察を行い，各探索手法の違いを説明せよ. 
+\end{screen}
+私の担当箇所は，必須課題1-1の中の幅優先探索と深さ優先探索である．
+
+\subsection{手法(課題実現のために改良した点)}
+プログラムの変更点は大きく4つである．
+\begin{enumerate}
+\item 課題にあるように状態空間におけるパラメータを変化させ，各探索手法に適したパラメータで各探索手法を比較できるよう，コマンドライン引数の数を一つ増やし，makeStateSpaceメソッドでパラメータの場合分けが行えるようにした．
+\item パラメータ変更を乱数で決定できるようにした(分枝限定法のみ)．
+\item 各探索手法の実行時間を表示できるようにした．
+\item 状態空間の親ノードと子ノードの関係性をCSVファイルに出力できるメソッドを作成した．
+\end{enumerate}
+\vspace{5mm}
+\hspace{4mm}1については，パラメータの変化のみであれば(ヒント)のように配列を用いる手法も取れると考えたが，私が担当する幅優先探索と深さ優先探索はコストや評価値を用いずに探索を行う．これでは与えられた状態空間では常に結果が一定になってしまうため，状態空間そのものを変更出来るよう実装を行った．\\
+
+2については，小中君の担当箇所であるため，小中君が実装を行った．\\
+
+3については，青山君がSystem.currentTimeMillisメソッドを用いて実装を行った．\\
+
+4については，後藤君がexportCsvメソッドを新しく作成し実装を行った．
+
+\subsection{手法(課題実現のために工夫した点)}
+私の担当箇所は幅優先探索と深さ優先探索であるため，これらの探索手法を他の探索手法と比較する．しかしこの2つの探索手法はパラメータに依存しないため，パラメータの変更のみでは比較が難しいと考えた．そこで，状態空間そのものを変更することを考えた．\par
+この時，ノードの数・開始ノードと終了ノードは変更せず，パラメータの値とノードの接続の関係性のみを変更することとした．\\
+
+さらに，幅優先探索と深さ優先探索は経路のコストを考えないため，それ以外の探索手法との比較は各々の探索手法のステップ数と，探索開始から終了までにかかる実行時間で行うこととした．\par
+ステップ数は各ノードを探索した回数であるとプログラムから分かったので，これが幅優先探索と深さ優先探索で最小になれば実行時間も最小になると考え，実装は各探索手法のステップ数を考えながら行った．\par
+この時2つ目のコマンドライン引数は，それぞれの探索の場合分けと同じ値を入力すると，それに対応した改良版の状態空間にノードが書き換わるようにした．またそれ以外の数を入力した場合は全て与えられた状態空間になるようにし，エラーが発生しないようにした．\\
+
+System.currentTimeMillisメソッドとexportCsvメソッドについては，私の担当箇所でないため，割愛する．
+
+\subsection{実装}
+
+Search.javaに対して，コマンドライン引数を2つ受け取るようにプログラムを書き換えた．
+\begin{itemize}
+\item mainメソッド: 実行命令が正しく入力されているかを確認し、各探索のため場合分けを行う．
+\end{itemize}
+
+始めに，コマンドライン引数を2つ受け取るmainメソッドの実装をソースコード\ref{src:コマンドライン引数}に示す。
+
+\begin{lstlisting}[caption=mainメソッド,label=src:コマンドライン引数]
+public static void main(String[] args) {
+	if (args.length != 2) {
+		System.out.println("USAGE:");
+		System.out.println("java Search [Number] [NodePattern]");
+		System.out.println("[Number] = 1 : Bredth First Search");
+		System.out.println("[Number] = 2 : Depth  First Search");
+		・・・
+		System.out.println("[NodePattern] = 1 : Bredth First Search is best");
+		System.out.println("[NodePattern] = 2 : Depth  First Search is best");
+		・・・
+		System.out.println("[NodePattern] = other : initial value");
+	}
+	・・・
+\end{lstlisting}
+
+\vspace{25mm}
+さらに，受け取った引数を基に各々の状態空間の情報をSearchメソッドとmakeStateSpaceメソッドに渡すため，引数whichNodeとその操作を以下のように実装した。
+\vspace{5mm}
+
+\begin{lstlisting}[caption=引数whichNodeと関連メソッド,label=src:whichNode]
+public static void main(String[] args) {
+	if (args.length != 2) {
+	・・・
+	} else {
+		int which = Integer.parseInt(args[0]);
+		int whichNode = Integer.parseInt(args[1]);
+		switch (which) {
+			case 1:
+				// 幅優先探索
+				System.out.println("\nBreadth First Search");
+				(new Search(whichNode)).breadthFirst();
+				・・・
+		}
+Search(int whichNode) {
+	makeStateSpace(whichNode);
+}
+private void makeStateSpace(int whichNode) {
+	・・・
+	switch (whichNode) {
+		case 1:
+		・・・
+	}
+}
+\end{lstlisting}
+
+これ以降，switch文を用いた場合分けにより状態空間を変化させる。
+
+\vspace{5mm}
+
+\subsection{実行例}
+
+実行例として，
+\begin{enumerate}
+\item 与えられた状態空間
+\item 幅優先探索が最もステップ数が少ない状態空間
+\item 深さ優先探索が最もステップ数が少ない状態空間
+\end{enumerate}
+の3つを実行した結果についてまとめる．\\
+
+
+まず，各々の状態空間がどのような関係性にあるのかを以下のページに示す．
+
+\clearpage
+
+1つ目は，与えられた状態空間の関係性の図である．\\
+
+\begin{figure}[!hbt]
+  	\begin{center}
+  		\includegraphics[scale=0.50]{image/default.png}
+	\end{center}
+  	\caption{与えられた状態空間}
+\end{figure}
+\clearpage
+
+2つ目は，幅優先探索のステップ数が最も少なくなるように各ノードの関係性を変えた図である．\\
+
+\begin{figure}[!hbt]
+	\centering
+	\includegraphics[scale=0.50]{image/BFS.png}
+	\caption{幅優先探索が最小ステップ数になる状態空間}
+\end{figure}
+\clearpage
+
+3つ目は，深さ優先探索のステップ数が最も少なくなるように各ノードの関係性を変えた図である．\\
+
+\begin{figure}[!hbt]
+	\centering
+	\includegraphics[scale=0.50]{image/DFS.png}
+	\caption{深さ優先探索が最小ステップ数になる状態空間}
+\end{figure}
+
+\clearpage
+
+担当箇所である幅優先探索と深さ優先探索が最良となるような状態空間を作成したため，これらと初めに与えられた状態空間の実行結果を以下に示す．出力される結果は以下のようになる．
+
+\begin{lstlisting}
+Breadth First Search
+STEP:0
+OPEN:[L.A.Airport(h:0)]
+CLOSED:[]
+STEP:1
+OPEN:[UCLA(h:7), Hoolywood(h:8)]
+CLOSED:[L.A.Airport(h:0)]
+STEP:2
+OPEN:[Hoolywood(h:8), Anaheim(h:6), GrandCanyon(h:1)]
+CLOSED:[L.A.Airport(h:0), UCLA(h:7)]
+STEP:3
+OPEN:[Las Vegas(h:0), Anaheim(h:6), GrandCanyon(h:1)]
+CLOSED:[L.A.Airport(h:0), UCLA(h:7), Hoolywood(h:8)]
+*** Solution ***
+Las Vegas(h:0) <- Hoolywood(h:8) <- L.A.Airport(h:0)
+探索時間: 80ms
+\end{lstlisting}
+
+これは，図2の状態空間の出力結果である．その他の場合も同様に結果が出力された．\\
+
+次に，この3つの状態空間で各探索手法のステップ数と実行時間を表にまとめる．出力結果は，基本的に教科書にある表示と同様であったため，その結果をまとめたものを示す．\par
+ここで実行時間とは，各探索手法を10回計測した平均時間である．\\
+
+また実行環境はWindowsで，統合開発環境Eclipseに入っているjavaコンパイラとeclipseを使用しないjavaコンパイラでは実行時間が大きく変化することが分かった．そのため，今回はどちらの場合も実行時間の計測を行った．\\
+
+
+まず各探索手法のステップ数と，Eclipseを利用して実行した場合とそうでない場合の実行時間を以下の表に示す．実行時間の単位は全てmsである．
+\clearpage
+
+%\vspace{-5mm}
+\begin{table}[htb]
+	\caption{各探索手法のステップ数(STEP)}
+	\begin{tabular}{|l|r|r|r|}\hline
+		探索手法 & 初期状態 & 幅優先探索最良 & 深さ優先探索最良\\ \hline \hline
+		幅優先探索 & 6 & 3 & 8\\ \hline
+		深さ優先探索 & 5 & 7 & 5\\ \hline
+		分枝限定法 & 7 & 9 & 9\\ \hline
+		山登り法 & ∞ & (5) & (6)\\ \hline
+		最良優先探索 & 5 & 5 & 6\\ \hline
+		A*アルゴリズム & 7 & 6 & 8\\ \hline
+	\end{tabular}
+%\end{table}
+%\begin{table}[htb]
+	\caption{Eclipseを使用する時の実行時間(ms)}
+		\begin{tabular}{|l|r|r|r|}\hline
+			探索手法 & 初期状態 & 幅優先探索最良 & 深さ優先探索最良\\ \hline \hline
+			幅優先探索 & 4.8 & 2.4 & 4.0\\ \hline
+			深さ優先探索 & 3.3 & 5.6 & 3.5\\ \hline
+			分枝限定法 & 5.0 & 2.9 & 4.2\\ \hline
+			山登り法 & ∞ & 1.5 & 2.6\\ \hline
+			最良優先探索 & 3.7 & 3.1 & 3.0\\ \hline
+			A*アルゴリズム & 5.1 & 2.8 & 3.4\\ \hline
+		\end{tabular}
+%\end{table}
+%\begin{table}[htb]
+	\caption{Eclipseを使用しない時の実行時間(ms)}
+		\begin{tabular}{|l|r|r|r|}\hline
+			探索手法 & 初期状態 & 幅優先探索最良 & 深さ優先探索最良\\ \hline \hline
+			幅優先探索 & 140.8 & 104.6 & 139.5\\ \hline
+			深さ優先探索 & 116.0 & 126.7 & 112.8\\ \hline
+			分枝限定法 & 141.9 & 140.1 & 157.2\\ \hline
+			山登り法 & ∞ & 87.4 & 92.5\\ \hline
+			最良優先探索 & 115.2 & 116.5 & 117.6\\ \hline
+			A*アルゴリズム & 135.7 & 142.7 & 140.2\\ \hline
+		\end{tabular}
+\end{table}
+
+\subsection{考察}
+担当箇所から，幅優先探索と深さ優先探索の違いとその特徴の面と，それぞれの探索手法とその他の探索手法との違いと特徴を考察することにした．\par
+幅優先探索は今いるノードの子ノードの探索が全て終わってから次のノードの子ノードを探索するため，終了ノードが探索木の浅い位置にあると探索が早く終了する．対して深さ優先探索は，今いるノードの子ノードを次々に順に探索するため，終了ノードが探索する優先度の高い経路(先に探索される経路)にあると探索が早く終了する．このことをふまえ，各探索手法がより効率よくなる状態空間を考えた．\\
+
+また，本題とは異なるがEclipse利用時とそうでないときの実行時間が大きく異なった原因も考えた．それぞれのJavaのバージョンを調べたところ，以下のようであることが分かった．\\
+
+\begin{table}[htb]
+	\begin{tabular}{l|l}
+		環境 & バージョン\\ \hline
+		Eclipse & JavaSE-11\\
+		Java & 9.0.1\\
+	\end{tabular}
+\end{table}
+このことから，Eclipseで利用しているJavaとコマンドプロンプトで利用するJavaではバージョンが異なっていたため，性能に大きな違いが出たのではないかと考えた．Eclipseは今回の課題で利用するためにインストールしたため，Javaのバージョンが新しくなっていたのではないかと考えられる．\\
+
+\subsubsection{幅優先探索と深さ優先探索に関する考察}
+まず与えられた状態空間では，パラメータを変化させてもステップ数は常に一定である．これは2つの探索手法がパラメータに依存しないことによる．これでは常に深さ優先探索の方がステップ数が少ないため，実行時間もパラメータに関わらず深さ優先探索の方が短いことが確認できた．そのため状態空間そのものを変更することで，幅優先探索の方がより少ないステップ数で探索が行える場合を考えた．\\
+
+幅優先探索と深さ優先探索は対照的な探索方法であるため，状態空間の関係性も対照的になるのではないかと考えた．そこでまず開始ノードの終了ノード以外の8つのノードを縦長と横長に並べる状態空間を考えた(図4，図5)．\\
+
+\clearpage
+
+\begin{figure}[htbp]
+	\begin{minipage}{0.5\hsize}
+		\begin{center}
+			\includegraphics[scale=0.4]{image/pre1.png}\\
+		\end{center}
+		\caption{ノードを横長に並べた場合}
+		\label{fig:one}
+	\end{minipage}
+	\begin{minipage}{0.5\hsize}
+		\begin{center}
+			\includegraphics[scale=0.4]{image/pre2.png}\\
+		\end{center}
+		\caption{ノードを縦長に並べた場合}
+		\label{fig:two}
+	\end{minipage}
+\end{figure}
+
+しかし今回の状態空間では，各経路の終端は必ず終了ノードに接続されているため，図4の場合は深さ優先探索の方がステップ数が少なくなってしまう．そのため，対照的なノードの関係性だけでは，それぞれの探索のステップ数が必ずしも対照的になることはないと分かった．\\
+
+
+図5を実行すると想定通りに深さ優先探索の方がステップ数が少なくなったため，ノードの位置関係はこのままに矢印のみ増やすこととした(図3)．\\
+
+深さ優先探索は，先に探索した子ノードから優先的に探索を行う．今回のノードの条件では必ずどの経路も終了ノードにたどり着けるため，深さ優先探索は親ノードに戻って探索をやり直す必要がない．そのため最も効率が悪くなる場合は，先に探索する子ノードがより多くのノードを通して終了ノードにたどり着けば良いことが考えられた．そこからノードの構成を考え直した状態空間が，実行例で示した図2である．\\
+
+実行結果からステップ数を確認すると，図2の場合は幅優先探索が深さ優先探索より少なく，図3の場合は深さ優先探索の方が少なくなっていることが確認できる．同時に表2・表3から，実行時間も図2の状態空間では幅優先探索が，図3の状態空間では深さ優先探索が短くなっていることが確認できた．\\
+
+これらのことから全経路が終了ノードに収束する場合は，深さ優先探索は幅優先探索より少ないステップ数で探索できる場合が多いと考えられる．しかし，深さ優先探索の探索順を，初めに探索する経路が長くなるように状態空間を変化させることで，幅優先探索の方が効率の良い状態空間を作成することが出来ると分かった．
+
+\subsubsection{幅優先探索・深さ優先探索とその他の探索手法に関する考察}
+次に，幅優先探索・深さ優先探索とその他の探索手法との比較により，これらの特徴や違いを考察する．\\
+
+幅優先探索・深さ優先探索と異なり，その他の探索手法はコストとヒューリスティック値をふまえて探索を行う．これらの探索手法は，幅優先探索・深さ優先探索より効率的な探索方法として考えられたものであるため，コストの概念をふまえた探索結果により出力される最短経路は，幅優先探索や深さ優先探索よりもその他の探索の方が良い経路となることがほとんどだと考えられる．ただし，ヒューリスティック値のみを用いる場合は，ヒューリスティック値の精度の高さによって得られる結果が変わり，良い結果になるとは限らないとも考えられる．\par
+出力結果はコストやヒューリスティック値により変化してしまうため，幅優先探索や深さ優先探索との比較は難しいと考えた．そこで，先と同様に比較にはステップ数と実行時間を用いることとした．\\
+
+先に作成した図2，図3の状態空間を用いて，これらにコストとヒューリスティック値を与えることで，他の探索手法との比較を行った．\par
+図2，図3のようにコストとヒューリスティック値を与えた場合の結果が実行例に示した表1から表3である．表1から分かるように，図2の状態空間では幅優先探索が最小ステップ数となり，図3の状態空間では深さ優先探索が最小ステップ数となることが確認できる．山登り法はステップ数が実行結果に出力されなかったが，ヒューリスティック値を用いた深さ優先探索であるので，深さ優先探索と同様にしてステップ数を数えた．このようにステップ数だけで比較をするならば，幅優先探索や深さ優先探索もその他の探索手法より効率の良い探索が行えることが分かった．\\
+
+またこの時の実行時間も確認したところ，山登り法を除き，ほとんどの場合でステップ数が多いほど実行時間も長くなっていることが確認できた．表2の幅優先探索最良時の深さ優先探索と分枝限定法のように，ステップ数が多いにもかかわらず実行時間が短くなっている場合も見受けられたが，これはステップ数の変化があまり大きくないために実行時の別の環境要因が影響しているのではないかと考えられた．\\
+
+しかし，山登り法はステップ数が多い場合も実行時間が明らかに短くなっていることが確認された．これの原因として，ヒューリスティック値はコストよりも値へのアクセスが早く行えることや，出力時に表示する内容が他の探索手法よりも少ないことなどが影響しているのではないかと考えた．\\
+
+これらの結果から，探索するために訪れるノードの数は，コストやヒューリスティック値により幅優先探索や深さ優先探索の方が少なくなる場合が多いことが分かった．また，実行時間のほとんどがステップ数に影響することが確認できたので，幅優先探索や深さ優先探索の実行時間は他の探索手法より短くなることが多いことも分かった．しかし，今回は結果として得られた経路についてはふまえていないため，これを考慮すると幅優先探索や深さ優先探索はコスト面から効率の悪い探索手法になってしまうことも改めて確認できた．
+
+\section{感想}
+今回は，課題に取り組むためにGitHubやEclipse，Graphviz，Slackなどの今まで使用したことのないアプリケーションなどを活用した．そのため課題内容に取り組む前に学ぶことが多く，慣れるのが大変であった．しかし，今後のプログラム作成でも使っていくことになると感じたので，今のうちにこれらを学ぶことが出来たのはとても良かった．まだまだ使いこなせたとは言い難いので，これからの課題でも積極的に利用することで慣れていけるようにしたい．
+
+% 参考文献
+\begin{thebibliography}{99}
+\bibitem{Java新} 新谷虎松『Javaによる知能プログラミング入門』コロナ社，2002年．
+\bibitem{Java旧} 新谷虎松，大囿忠親，白松俊『知識システムの実装基礎』コロナ社，2012年．
+\bibitem{J1} Samurai\ Blog\ Javaのバージョンを確認する方法(バージョンの切り替えも解説), \url{https://www.sejuku.net/blog/62105} （2019年10月13日アクセス）.
+\bibitem{J2} どうすればアプレットを実行せずにどのJavaバージョンがWindowsまたはMacにインストールされているかを確認できますか。, \url{https://java.com/ja/download/help/version_manual.xml} （2019年10月13日アクセス）.
+\bibitem{J3} Eclipseで使用するJDKを確認します, \url{itdoc.hitachi.co.jp/manuals/link/cosmi_v0870/APFG/EU020018.HTM} （2019年10月13日アクセス）.
+\bibitem{G} Graphviz をインストールする , \url{ruby.kyoto-wu.ac.jp/info-com/Softwares/Graphviz/} （2019年10月13日アクセス）.
+\bibitem{G1} Graphvizの使い方を例題で覚える, \url{https://www.write-ahead-log.net/entry/2016/03/04/220933} （2019年10月13日アクセス）.
+\bibitem{G2} データのビジュアル化を最小の労力で, \url{www.showa-corp.jp/special/graphtools/graphviz.html} （2019年10月13日アクセス）.
+\bibitem{G3} Pynote\ Graphviz-ノードの属性, \url{pynote.hatenablog.com/entry/pygraphviz-node-attributes#ノードの形状} （2019年10月13日アクセス）.
+\bibitem{表組み} Latexコマンド集\ 表組みの基本, \url{www.latex-cmd.com/fig_tab/table01.html} （2019年10月13日アクセス）.
+
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,169 @@
+\documentclass[uplatex,12pt]{jsarticle}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{url}
+\usepackage{listings,jlisting}
+\usepackage{ascmac}
+\usepackage{amsmath,amssymb}
+
+%ここからソースコードの表示に関する設定
+\lstset{
+  basicstyle={\ttfamily},
+  identifierstyle={\small},
+  commentstyle={\smallitshape},
+  keywordstyle={\small\bfseries},
+  ndkeywordstyle={\small},
+  stringstyle={\small\ttfamily},
+  frame={tb},
+  breaklines=true,
+  columns=[l]{fullflexible},
+  numbers=left,
+  xrightmargin=0zw,
+  xleftmargin=3zw,
+  numberstyle={\scriptsize},
+  stepnumber=1,
+  numbersep=1zw,
+  lineskip=-0.5ex
+}
+%ここまでソースコードの表示に関する設定
+
+\title{知能プログラミング演習II 課題1}
+\author{グループ8\\
+  29114060 後藤 拓也\\
+}
+\date{2019年10月14日}
+
+\begin{document}
+\maketitle
+
+\paragraph{提出物} rep1
+
+\paragraph{グループ} グループ8
+
+\paragraph{グループメンバー}
+\begin{center}
+\begin{tabular}{|c|c|c|}
+  \hline
+  学生番号&氏名&貢献度比率\\
+  \hline\hline
+  29114003&青山周平&NoData\\
+  \hline
+  29114060&後藤拓也&NoData\\
+  \hline
+  29114116&増田大輝&NoData\\
+  \hline
+  29114142&湯浅範子&NoData\\
+  \hline
+  29119016&小中祐希&NoData\\
+  \hline
+\end{tabular}
+\end{center}
+\paragraph{自分の役割} 最良優先探索とA*アルゴリズムのパラメータ調整
+\paragraph{追加機能} csvファイル出力による親ノードと対応する子ノードの整理
+\\\\\\\\\\\\\\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{必須課題１}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{最良優先探索}
+最良推定法は各ノードにおけるヒューリスティック値をもとに探索を進めていく方法で,直前のノードから次のヒューリスティック値だけを見て,行き当たりばったりに探索を進める山登り法とは異なり,過去のデータ(これから訪れる可能性をもったノード)のヒューリスティック値をOpenListに保存するので,山登り法よりも最適な探索が可能である. 初期のパラメータを用いて探索を行うと下図1のような木構造を持つ探索となる.
+\begin{figure}[htbp]
+ \begin{center}
+  \includegraphics[width = 10cm, pagebox = cropbox, clip]{最良優先探索ver1.pdf}
+ \end{center}
+ \caption[]{初期パラメータにおける木構造モデル}\label{fig:fig1.1}
+\end{figure}
+
+探索経路の解としては,
+\begin{center}
+[L.A.Airport→Hollywood→Pasadena→Las Vegas]
+\end{center}
+と4STEPで進めるはずが,探索ノード(親ノードの推移)としては,
+\begin{center}
+[L.A.Airport→Hollywood→DownTown→Sandiego→Pasadena→LasVegas]
+\end{center}
+と, 7STEPを踏んでいる. Hollywoodから次に進む際にPasadenaへ進むのではなく, 1度Downtownへ進んでいるのである. そのため,この改善策として, 「Pasadena:node[7]のヒューリスティック値:h(7)をDowntown:node[6]:h(6)よりも小さくする」方法を取る. そのパラメータ調整後の木構造が下図2のようになる.
+\begin{figure}[htbp]
+ \begin{center}
+  \includegraphics[width = 10cm, pagebox = cropbox, clip]{最良優先探索ver2.pdf}
+ \end{center}
+ \caption[]{パラメータ調整後の木構造モデル}\label{fig:fig1.2}
+\end{figure}
+\\
+探索ノード(親ノードの推移)として,
+\begin{center}
+[L.A.Airport→Hollywood→Pasadena→Las Vegas]
+\end{center}
+と最適パスとなった.\\
+欠点としては, そのノードに固有なヒューリスティックな値を使って探索を進めていくので, すべてのノードのうちで最小のヒューリスティックの値をもつノードが無限に生成される場合は, 目標ノードに到達できない.\\
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{A*アルゴリズム}
+A*アルゴリズムはそのノードまでのコストの合計とそのノードのヒューリステック値の和をとる. 最良優先探索の弱点でさえも初期ノードからのコストを考慮することで, 正解にはたどり着ける.\\
+
+初期のパラメータを用いて探索を行うと下図3のような木構造を持つ探索となる.\\\\\\\\
+\begin{figure}[htbp]
+ \begin{center}
+  \includegraphics[width = 10cm, pagebox = cropbox, clip]{Astar_ver1.pdf}
+ \end{center}
+ \caption[]{初期パラメータにおける木構造モデル}\label{fig:fig1.3}
+\end{figure}
+
+探索経路の解としては,
+\begin{center}
+[L.A.Airport→UCLA→Hollywood→Pasadena→Las Vegas]
+\end{center}
+と5STEPで進めるはずが, 探索ノード(親ノードの推移)としては,
+\begin{center}
+[L.A.Airport→Hollywood→UCLA→Hollywood→Pasadena→DisneyLand→Dawntown→LasVegas]
+\end{center}
+と, 8STEPを踏んでいる.余分な探索として, 2箇所が上げられる.
+\begin{enumerate}
+ \item 始めにHollywood:node[2]に進まずに, UCLA:node[1]に進んでほしい.
+ \item 最後にPasadena:node[7]からDisneyLand:node[8]に進まず, LasVegas:node[8]に進んでほしい.
+\end{enumerate}
+
+よって, これらを改善するために以下の2つを変更してみる.
+\begin{enumerate}
+ \item UCLA:node[1]のヒューリスティック値:h(1)=7をHollywood:node[2]のヒューリスティック値:h(2)=4よりも小さくする. (既にコストgの値は小さいので.)
+ \item Pasadena:node[7]からDisneyLand:node[8]のコストをPasadena:node[7]からDisneyLand:node[8]のコストよりも小さくする. (既にヒューリスティック値はh(9)よりも小さいので.)\\
+その結果, 下図4のようになった.
+\begin{figure}[htbp]
+ \begin{center}
+  \includegraphics[width = 10cm, pagebox = cropbox, clip]{Astar_ver2.pdf}
+ \end{center}
+ \caption[]{2つのパラメータ変更後の木構造モデル}\label{fig:fig1.3}
+\end{figure}
+\end{enumerate}
+これによって,探索経路の解と同じ5STEPの探索ノード(親ノード)の推移を作ることができた.\\
+なお, 始めの分岐でUCLA:node[1]を選ばず, Hollywood:node[2]を選ぶようにパラメータを調整することで, 4STEP探索も可能となる.(木構造は最良優先探索と同様になるので省略.)
+
+\subsection{CSV出力}
+  実際に探索手順を追っていくために,"知能処理学"で学んだような親ノード,子ノードと展開されるリストとそれぞれのコストやヒューリスティックの値を表を実際に手で書いていた. それをプログラムで出力させてみようとまずは自分の担当だったA*アルゴリズムを用いてプログラムを書いてみた. Searchクラスの中のaStarメソッドの中で, 該当する親, 子ノードを取得し, リストに格納していく. 探索がすべて終わったところで, 用意したexportCSVメソッドを呼び出し, 出力させる. プログラムのポイントは, 全てのノードデータを集めてから, 1枚のcsvファイルを出力させなければならないが, 各STEPごとで子ノードの数も違い, またどこまでが1STEPの情報なのか判別しないといけない. その工夫としては, 1STEPが終了するごとに子ノードリストにnullを入れることで解決した. exportCSVメソッド内でループを回して順にリストの中身を取る際に, 子ノードリストに含まれているnullの有無で条件判別ができ, STEPごとにcsvファイルを改行させることに成功した.\\
+　試して分かったことだが, Nodeクラスでノードインスタンスを作る際に, そのノードにコスト:g, ヒューリステック値:h, 評価関数値:f がすでに含まれているので, わざわざ別個でそれらのデータを取る必要はなかった. それらの結果, ただ親ノードとそれに続く子ノードを出力し, csvファイルに保存するだけのお粗末な仕上がりとなってしまった. ただそのおかげで, コストやヒューリステック値の使用有無によらず, どの探索でも使用できる汎用性の高いプログラムとなった. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{必須課題2}
+\subsection{GitHubの導入}
+　増田君の提案と実行力のおかげで, GitHubを用いたプログラム・レポート共有ができた. GitHubは自分は初めて使うツールだったので, branchやmergeなどわからないところが多く, 苦労した. 特に苦労した点は, レポジトリー をリモートに登録する作業である. 今回は増田君がベースで作ってくれたmasterの内容を自分のローカルにクローンし, その中に含まれているmasterへのコネクト情報(隠れディレクトリ.gitに含まれている内容)を使って作成しないといけないことに, なかなか気づけなかったことだ. 自分はネットでGitHubの使い方を調べているときに, レポジトリを作成させる方法のもう1つ, クローンではなく, 新規作成させる方法を見て何度も試していたので, なかなか成功しなかった. そこさえわかれば, add, commit操作やブランチ移動のcheckout操作など, そのほかも上手く使いこなせることができた.
+\subsection{Slackの導入}
+　また, グループの進捗確認を行う際に, 始めはLINEを駆使していたが, それでは誰がいつ言った内容に応答しているのか, 樹形列順でごちゃごちゃしてしまうということで, これまた増田君の提案のもと, Slackを使い始めた. これはGitよりも直観的でわかりやすく, また, 1人の発言に対しての応答が取りやすく, 整理されていてわかりやすかった.
+
+
+% 参考文献
+\begin{thebibliography}{99}
+\bibitem{notty} Javaによる知能プログラミング入門 --著：新谷 虎松 \\
+\bibitem{notty} 知識システムの実装基礎 --著：新谷 虎松/大園 忠親/白松 俊 \\
+\bibitem{notty} java CSV出力 --著：TECH Pin \\
+\url{https://tech.pjin.jp/blog/2017/10/17/【java】csv出力のサンプルコード}
+\bibitem{notty} java List配列処理と変換 --著：Samurai Blog \\
+\url{https://www.sejuku.net/blog/16155}
+\bibitem{notty} Gitでブランチを作成する方法 --著：ProEngineer \\
+\url{https://proengineer.internous.co.jp/content.columnfeature/7633}
+\bibitem{notty} Gitレポジトリの変更と取得 --著：GitHub ヘルプ\\
+\url{https://help.github.com/ja/articles/getting-changes-from-a-remote-repository}
+\bibitem{notty} LaTex 箇条書き --著：LaTexコマンド集\\
+\url{http://www.latex-cmd.com/struct/list.html}
+\end{thebibliography}
+
+\end{document}
